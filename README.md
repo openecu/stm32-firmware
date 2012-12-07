@@ -1,4 +1,1 @@
-stm32-firmware
-==============
-
-STM32 ECU firmware
+Open source ECU firmware based on STM32 MCU.
