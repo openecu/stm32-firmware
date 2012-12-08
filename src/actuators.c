@@ -13,3 +13,29 @@ void cooling_fan(void)
 
     }
 }
+
+void aux(void)
+{
+    uint8_t i;
+    aux_t *aux;
+
+    for (i = 0; i < AUX_COUNT; i++)
+    {
+        aux = &config.aux[i];
+
+        if (
+            (sensors.rpm >= aux->rpm_on)
+            && (sensors.ect >= aux->ect_on)
+        )
+        {
+
+        }
+        else if (
+            sensors.rpm <= aux->rpm_off
+            && (sensors.ect <= aux->ect_off)
+        )
+        {
+
+        }
+    }
+}

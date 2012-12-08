@@ -6,5 +6,6 @@ int main(void)
     for (;;)
     {
         cooling_fan();
+        aux();
     }
 }

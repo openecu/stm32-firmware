@@ -3,6 +3,7 @@
 
 typedef struct
 {
+    uint16_t rpm;
     int8_t ect;
 } sensors_t;
 

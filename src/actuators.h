@@ -3,8 +3,8 @@
 
 #include <inttypes.h>
 
-#define COOLANT_FAN
-
 void cooling_fan(void);
+
+void aux(void);
 
 #endif
