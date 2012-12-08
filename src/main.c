@@ -1,8 +1,10 @@
 #include <stm32f4xx.h>
+#include "actuators.h"
 
 int main(void)
 {
-    while(1)
+    for (;;)
     {
+        cooling_fan();
     }
 }
