@@ -29,7 +29,7 @@ void aux(void)
     {
         aux = &ecu.config.aux[i];
 
-        if (!aux->ena)
+        if (!aux->en)
         {
             continue;
         }
@@ -39,14 +39,28 @@ void aux(void)
             && (ecu.sensors.ect >= aux->ect_on)
         )
         {
-            AUX_ON(i);
+            if (aux->inv)
+            {
+                AUX_OFF(i);
+            }
+            else
+            {
+                AUX_ON(i);
+            }
         }
         else if (
             (ecu.sensors.rpm <= aux->rpm_off)
             && (ecu.sensors.ect <= aux->ect_off)
         )
         {
-            AUX_OFF(i);
+            if (aux->inv)
+            {
+                AUX_ON(i);
+            }
+            else
+            {
+                AUX_OFF(i);
+            }
         }
     }
 }

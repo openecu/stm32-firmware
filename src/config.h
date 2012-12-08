@@ -5,7 +5,7 @@
 
 typedef struct
 {
-    uint8_t num;
+    uint8_t en: 1;
     uint8_t inv: 1;
     uint16_t rpm_on;
     uint16_t rpm_off;
@@ -19,7 +19,5 @@ typedef struct
     uint8_t fan_temp_hyst;
     aux_t aux[AUX_COUNT];
 } config_t;
-
-extern config_t config;
 
 #endif
