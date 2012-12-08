@@ -3,4 +3,6 @@
 
 #include <inttypes.h>
 
+void idle_init(void);
+
 #endif

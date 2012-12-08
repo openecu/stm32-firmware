@@ -1,7 +1,8 @@
 #ifndef _CONFIG_H
 #define _CONFIG_H
 
-#define AUX_COUNT   8
+#include "actuators.h"
+#include "pid.h"
 
 typedef struct
 {
@@ -15,6 +16,9 @@ typedef struct
 
 typedef struct
 {
+    uint16_t idle_rpm[16];
+    int8_t idle_temp_scale[16];
+    pid_config_t idle_pid_config;
     int8_t cooling_fan_temp;
     uint8_t cooling_fan_temp_hyst;
     int8_t water_pump_temp;
