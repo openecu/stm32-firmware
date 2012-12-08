@@ -1,25 +1,25 @@
 #include "mathext.h"
 
-uint16_t linear_interp(uint16_t x, uint16_t y0, uint16_t y1, uint16_t x0, uint16_t x1)
+int16_t linear_interp(int16_t x, int16_t y0, int16_t y1, int16_t x0, int16_t x1)
 {
-    return (y0 + (int32_t)((int16_t)(y1 - y0) * (int16_t)(x - x0)) / (int16_t)(x1 - x0));
+    return (y0 + (int32_t)((y1 - y0) * (x - x0)) / (x1 - x0));
 }
 
-uint16_t bilinear_interp(
-    uint16_t x, uint16_t y,
-    uint16_t z0, uint16_t z1, uint16_t z2, uint16_t z3,
-    uint16_t x0, uint16_t x1, uint16_t y0, uint16_t y1
+int16_t bilinear_interp(
+    int16_t x, int16_t y,
+    int16_t z0, int16_t z1, int16_t z2, int16_t z3,
+    int16_t x0, int16_t x1, int16_t y0, int16_t y1
 )
 {
-    uint16_t z12, z03;
+    int16_t z12, z03;
 
-    z12 = z1 + (int32_t)((int16_t)(z2 - z1) * (int16_t)(x - x0)) / (int16_t)(x1 - x0);
-    z03 = z0 + (int32_t)((int16_t)(z3 - z0) * (int16_t)(x - x0)) / (int16_t)(x1 - x0);
+    z12 = z1 + (int32_t)((z2 - z1) * (x - x0)) / (x1 - x0);
+    z03 = z0 + (int32_t)((z3 - z0) * (x - x0)) / (x1 - x0);
 
-    return (z03 + (uint32_t)((uint16_t)(z12 - z03) * (int16_t)(y - y0)) / (int16_t)(y1 - y0));
+    return (z03 + (uint32_t)((z12 - z03) * (y - y0)) / (y1 - y0));
 }
 
-uint8_t table_index(uint16_t *value, uint16_t values[], uint8_t size)
+uint8_t table_index(int16_t *value, int16_t values[], uint8_t size)
 {
     uint8_t index, last_index;
 
@@ -51,19 +51,29 @@ uint8_t table_index(uint16_t *value, uint16_t values[], uint8_t size)
     return (index - 1);
 }
 
-uint16_t table_lookup(
-    uint16_t x, uint16_t y,
+int16_t table1d_lookup(int16_t x, uint8_t nx, int16_t vx[], int16_t *data)
+{
+    uint8_t ix;
+    int16_t _x;
+
+    _x = x;
+    ix = table_index(&_x, vx, nx);
+
+    return linear_interp(_x, data[ix], data[ix + 1], vx[ix], vx[ix + 1]);
+}
+
+int16_t table2d_lookup(
+    int16_t x, int16_t y,
     uint8_t nx, uint8_t ny,
-    uint16_t vx[], uint16_t vy[],
-    uint16_t **data
+    int16_t vx[], int16_t vy[],
+    int16_t **data
 )
 {
     uint8_t ix, iy;
-    uint16_t _x, _y;
+    int16_t _x, _y;
 
     _x = x;
     _y = y;
-
     ix = table_index(&_x, vx, nx);
     iy = table_index(&_y, vy, ny);
 
