@@ -17,24 +17,25 @@ typedef struct
 typedef struct
 {
     /* Cranking */
-    #define CRANK_RPM_SCALE_SIZE    8
     #define CRANK_TEMP_SCALE_SIZE   8
     // Cranking threshold RPM
     uint16_t crank_thres_rpm;
-    // RPM scale
-    int8_t crank_rpm_scale[CRANK_RPM_SCALE_SIZE];
     // Engine coolant temp scale
-    uint16_t crank_temp_scale[CRANK_TEMP_SCALE_SIZE];
-    // Injector pulse width vs RPM
-    uint16_t crank_pw[CRANK_RPM_SCALE_SIZE];
+    int8_t crank_temp_scale[CRANK_TEMP_SCALE_SIZE];
+    // Injector pulse width vs coolant temp
+    uint16_t crank_pw[CRANK_TEMP_SCALE_SIZE];
     // Enrichment vs coolant temp
-    int16_t crank_enrich[CRANK_TEMP_SCALE_SIZE];
+    //int16_t crank_enrich[CRANK_TEMP_SCALE_SIZE];
+    // Enrichment vs coolant temp
+    int16_t crank_ign_adv[CRANK_TEMP_SCALE_SIZE];
 
-    /* After start and Warm-Up */
+    /* Afterstart and Warm-Up */
     #define AFTERSTART_TEMP_SCALE_SIZE  8
     #define WARMUP_TEMP_SCALE_SIZE  8
-    // Warm-Up enrichment vs coolant temp
+    // Afterstart enrichment vs coolant temp
     int16_t afterstart_enrich[AFTERSTART_TEMP_SCALE_SIZE];
+    // Afterstart enrichment decay
+    uint8_t afterstart_enrich_decay;
     // Warm-Up enrichment vs coolant temp
     int16_t warmup_enrich[WARMUP_TEMP_SCALE_SIZE];
 
@@ -47,8 +48,8 @@ typedef struct
     uint16_t idle_rpm_scale[IDLE_RPM_SCALE_SIZE];
     // Target RPM vs coolant temp
     uint16_t idle_rpm[IDLE_TEMP_SCALE_SIZE];
-    // Timing advance vs RPM
-    int8_t idle_timing_adv[IDLE_RPM_SCALE_SIZE];
+    // Ignition timing advance vs RPM
+    int8_t idle_ign_adv[IDLE_RPM_SCALE_SIZE];
     // Valve PID config
     pid_config_t idle_pid_config;
 
