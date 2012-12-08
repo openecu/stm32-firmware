@@ -36,13 +36,13 @@ void water_pump(void)
 void aux(void)
 {
     uint8_t i;
-    aux_t *aux;
+    aux_config_t *aux;
 
     for (i = 0; i < AUX_COUNT; i++)
     {
         aux = &ecu.config.aux[i];
 
-        if (!aux->en)
+        if (!(aux->flags & AUX_FLAG_EN))
         {
             AUX_CH_OFF(i);
         }
@@ -53,7 +53,7 @@ void aux(void)
                 && (ecu.sensors.ect >= aux->ect_on)
             )
             {
-                if (aux->inv)
+                if ((aux->flags & AUX_FLAG_INV))
                 {
                     AUX_CH_OFF(i);
                 }
@@ -67,7 +67,7 @@ void aux(void)
                 && (ecu.sensors.ect <= aux->ect_off)
             )
             {
-                if (aux->inv)
+                if ((aux->flags & AUX_FLAG_INV))
                 {
                     AUX_CH_ON(i);
                 }
