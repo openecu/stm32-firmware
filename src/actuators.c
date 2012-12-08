@@ -1,11 +1,12 @@
 #include "actuators.h"
+#include "ecu.h"
 
 extern ecu_t ecu;
 
 void actuators_init(void)
 {
-    ACTUATORS_GPIO->ODR &= ~ACTUATORS_PORT_MASK;
-    ACTUATORS_GPIO->ODR |= ACTUATORS_PORT_MASK;
+    ACTUATORS_OFF();
+    AUX_OFF();
 }
 
 void cooling_fan(void)
@@ -14,7 +15,7 @@ void cooling_fan(void)
     {
         ACTUATOR_ON(COOLING_FAN);
     }
-    else if (ecu.sensors.ect <= (ecu.config.cooling_fan_temp - ecu.config.cooling_fan_temp_hyst))
+    else if (ecu.sensors.ect < (ecu.config.cooling_fan_temp - ecu.config.cooling_fan_temp_hyst))
     {
         ACTUATOR_OFF(COOLING_FAN);
     }
@@ -26,7 +27,7 @@ void water_pump(void)
     {
         ACTUATOR_ON(WATER_PUMP);
     }
-    else if (ecu.sensors.ect <= (ecu.config.water_pump_temp - ecu.config.water_pump_temp_hyst))
+    else if (ecu.sensors.ect < (ecu.config.water_pump_temp - ecu.config.water_pump_temp_hyst))
     {
         ACTUATOR_OFF(WATER_PUMP);
     }
@@ -43,35 +44,37 @@ void aux(void)
 
         if (!aux->en)
         {
-            continue;
+            AUX_CH_OFF(i);
         }
-
-        if (
-            (ecu.sensors.rpm >= aux->rpm_on)
-            && (ecu.sensors.ect >= aux->ect_on)
-        )
+        else
         {
-            if (aux->inv)
+            if (
+                (ecu.sensors.rpm >= aux->rpm_on)
+                && (ecu.sensors.ect >= aux->ect_on)
+            )
             {
-                AUX_OFF(i);
+                if (aux->inv)
+                {
+                    AUX_CH_OFF(i);
+                }
+                else
+                {
+                    AUX_CH_ON(i);
+                }
             }
-            else
+            else if (
+                (ecu.sensors.rpm <= aux->rpm_off)
+                && (ecu.sensors.ect <= aux->ect_off)
+            )
             {
-                AUX_ON(i);
-            }
-        }
-        else if (
-            (ecu.sensors.rpm <= aux->rpm_off)
-            && (ecu.sensors.ect <= aux->ect_off)
-        )
-        {
-            if (aux->inv)
-            {
-                AUX_ON(i);
-            }
-            else
-            {
-                AUX_OFF(i);
+                if (aux->inv)
+                {
+                    AUX_CH_ON(i);
+                }
+                else
+                {
+                    AUX_CH_OFF(i);
+                }
             }
         }
     }

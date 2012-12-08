@@ -3,7 +3,6 @@
 
 #include <stm32f4xx.h>
 #include <inttypes.h>
-#include "ecu.h"
 
 /* Actuators */
 
@@ -67,8 +66,10 @@ void water_pump(void);
 #define AUX_PORT_OFFSET 8
 #define AUX_PORT_MASK   (0xFF << AUX_PORT_OFFSET)
 
-#define AUX_ON(num)     AUX_GPIO->ODR |= (1 << (num + AUX_PORT_OFFSET))
-#define AUX_OFF(num)    AUX_GPIO->ODR &= ~(1 << (num + AUX_PORT_OFFSET))
+#define AUX_OFF()   AUX_GPIO->ODR &= ~(1 << AUX_PORT_OFFSET);
+
+#define AUX_CH_ON(num)     AUX_GPIO->ODR |= (1 << (num + AUX_PORT_OFFSET))
+#define AUX_CH_OFF(num)    AUX_GPIO->ODR &= ~(1 << (num + AUX_PORT_OFFSET))
 
 void aux(void);
 
