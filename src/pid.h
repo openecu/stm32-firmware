@@ -5,18 +5,18 @@
 
 typedef struct
 {
-	uint8_t kp;
-	uint8_t ki;
-	uint8_t kd;
-	uint32_t integral_max;
+    uint8_t kp;
+    uint8_t ki;
+    uint8_t kd;
+    uint32_t integral_max;
 } pid_config_t;
 
 typedef struct
 {
-	pid_config_t *config;
-	uint16_t target;
-	int16_t error;
-	int32_t integral;
+    pid_config_t *config;
+    uint16_t target;
+    int16_t error;
+    int32_t integral;
 } pid_t;
 
 void pid_init(pid_t *pid, pid_config_t *config);
