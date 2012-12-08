@@ -4,9 +4,11 @@
 typedef struct
 {
     uint16_t rpm;
+    uint16_t map;
+    uint16_t maf;
     int8_t ect;
+    int8_t iat;
+    uint8_t ego;
 } sensors_t;
-
-extern sensors_t sensors;
 
 #endif
