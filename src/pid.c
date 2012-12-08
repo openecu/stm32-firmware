@@ -6,12 +6,12 @@ void pid_init(pid_t *pid, pid_config_t *config)
     pid->integral = 0;
 }
 
-void pid_set_target(pid_t *pid, uint16_t target)
+void pid_set_target(pid_t *pid, int16_t target)
 {
     pid->target = target;
 }
 
-int16_t pid_do(pid_t *pid, uint16_t current)
+int16_t pid_do(pid_t *pid, int16_t current)
 {
     int16_t result, error, diff;
     int32_t integral;

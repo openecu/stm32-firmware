@@ -18,7 +18,7 @@ void idle_control(void)
     int16_t duty;
 
     target_rpm = table1d_lookup(
-        (int16_t)ecu.sensors.ect, 16,
+        ecu.sensors.ect, IDLE_TEMP_SCALE_SIZE,
         (int16_t*)ecu.config.idle_temp_scale, (int16_t*)ecu.config.idle_rpm
     );
     pid_set_target(&idle_pid, target_rpm);
