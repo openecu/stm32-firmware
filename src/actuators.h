@@ -62,6 +62,8 @@ void water_pump(void);
 
 /* Auxiliary outputs */
 
+#define AUX_COUNT   8
+
 #define AUX_GPIO        GPIOA
 #define AUX_PORT_OFFSET 8
 #define AUX_PORT_MASK   (0xFF << AUX_PORT_OFFSET)
