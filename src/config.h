@@ -4,20 +4,50 @@
 #include "actuators.h"
 #include "pid.h"
 
+/* Cranking */
+#define CRANK_TEMP_SCALE_SIZE   8
+
+/* Afterstart and Warm-Up */
+#define AFTERSTART_TEMP_SCALE_SIZE  8
+#define WARMUP_TEMP_SCALE_SIZE      8
+
+/* Idling */
+#define IDLE_TEMP_SCALE_SIZE    8
+#define IDLE_RPM_SCALE_SIZE     8
+
+/* Auxiliary outputs */
+#define AUX_COUNT       8
+#define AUX_FLAG_EN     0x01
+#define AUX_FLAG_INV    0x02
+
+/* Injectors */
+#define INJ_COUNT               8
+#define INJ_VOLTAGE_SCALE_SIZE  8
+
+/* Ignition channels */
+#define IGN_COUNT               8
+#define IGN_VOLTAGE_SCALE_SIZE  8
+
 typedef struct
 {
-    uint8_t en: 1;
-    uint8_t inv: 1;
+    uint8_t flags;
     uint16_t rpm_on;
     uint16_t rpm_off;
     int8_t ect_on;
     int8_t ect_off;
-} aux_t;
+} aux_config_t;
+
+typedef struct
+{
+    // Deadtime vs battery voltage
+    uint16_t deadtime[INJ_VOLTAGE_SCALE_SIZE];
+    // Multiplier
+    uint16_t multiplier;
+} inj_config_t;
 
 typedef struct
 {
     /* Cranking */
-    #define CRANK_TEMP_SCALE_SIZE   8
     // Cranking threshold RPM
     uint16_t crank_thres_rpm;
     // Engine coolant temp scale
@@ -26,12 +56,10 @@ typedef struct
     uint16_t crank_pw[CRANK_TEMP_SCALE_SIZE];
     // Enrichment vs coolant temp
     //int16_t crank_enrich[CRANK_TEMP_SCALE_SIZE];
-    // Enrichment vs coolant temp
-    int16_t crank_ign_adv[CRANK_TEMP_SCALE_SIZE];
+    // Ignition timing advance vs coolant temp
+    int8_t crank_ign_adv[CRANK_TEMP_SCALE_SIZE];
 
     /* Afterstart and Warm-Up */
-    #define AFTERSTART_TEMP_SCALE_SIZE  8
-    #define WARMUP_TEMP_SCALE_SIZE  8
     // Afterstart enrichment vs coolant temp
     int16_t afterstart_enrich[AFTERSTART_TEMP_SCALE_SIZE];
     // Afterstart enrichment decay
@@ -40,8 +68,6 @@ typedef struct
     int16_t warmup_enrich[WARMUP_TEMP_SCALE_SIZE];
 
     /* Idling */
-    #define IDLE_TEMP_SCALE_SIZE    8
-    #define IDLE_RPM_SCALE_SIZE     8
     // Coolant temp scale
     int8_t idle_temp_scale[IDLE_TEMP_SCALE_SIZE];
     // RPM scale
@@ -70,7 +96,18 @@ typedef struct
     uint8_t water_pump_temp_hyst;
 
     /* Auxiliary outputs */
-    aux_t aux[AUX_COUNT];
+    aux_config_t aux[AUX_COUNT];
+
+    /* Injectors */
+    // Battery voltage scale size
+    uint8_t inj_voltage_scale[INJ_VOLTAGE_SCALE_SIZE];
+    // Individual injectors config
+    inj_config_t injectors[INJ_COUNT];
+
+    /* Ignition channels */
+    // Dwell time vs battery voltage
+    uint16_t ign_dwell[IGN_VOLTAGE_SCALE_SIZE];
+
 } config_t;
 
 #endif
