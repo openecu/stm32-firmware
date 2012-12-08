@@ -15,8 +15,10 @@ typedef struct
 
 typedef struct
 {
-    uint8_t fan_temp;
-    uint8_t fan_temp_hyst;
+    uint8_t cooling_fan_temp;
+    uint8_t cooling_fan_temp_hyst;
+    uint8_t water_pump_temp;
+    uint8_t water_pump_temp_hyst;
     aux_t aux[AUX_COUNT];
 } config_t;
 

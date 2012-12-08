@@ -10,13 +10,25 @@ void actuators_init(void)
 
 void cooling_fan(void)
 {
-    if (ecu.sensors.ect >= ecu.config.fan_temp)
+    if (ecu.sensors.ect >= ecu.config.cooling_fan_temp)
     {
         ACTUATOR_ON(COOLING_FAN);
     }
-    else if (ecu.sensors.ect <= (ecu.config.fan_temp - ecu.config.fan_temp_hyst))
+    else if (ecu.sensors.ect <= (ecu.config.cooling_fan_temp - ecu.config.cooling_fan_temp_hyst))
     {
         ACTUATOR_OFF(COOLING_FAN);
+    }
+}
+
+void water_pump(void)
+{
+    if (ecu.sensors.ect >= ecu.config.water_pump_temp)
+    {
+        ACTUATOR_ON(WATER_PUMP);
+    }
+    else if (ecu.sensors.ect <= (ecu.config.water_pump_temp - ecu.config.water_pump_temp_hyst))
+    {
+        ACTUATOR_OFF(WATER_PUMP);
     }
 }
 

@@ -12,6 +12,7 @@ int main(void)
     {
         //fuel_pump_on();
         cooling_fan();
+        water_pump();
         aux();
     }
 }
