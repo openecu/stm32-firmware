@@ -11,7 +11,5 @@ int main(void)
     for (;;)
     {
         cooling_fan();
-        water_pump();
-        aux();
     }
 }

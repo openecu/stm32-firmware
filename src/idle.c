@@ -2,7 +2,7 @@
 #include "ecu.h"
 #include "pid.h"
 #include "pwm.h"
-#include "hardware.h"
+#include "hwconf.h"
 #include "mathext.h"
 
 extern ecu_t ecu;
