@@ -2,6 +2,7 @@
 #include "ecu.h"
 #include "pid.h"
 #include "pwm.h"
+#include "hardware.h"
 #include "mathext.h"
 
 extern ecu_t ecu;
@@ -23,5 +24,5 @@ void idle_control(void)
     );
     pid_set_target(&idle_pid, target_rpm);
     duty = pid_do(&idle_pid, ecu.sensors.rpm);
-    pwm_set_duty(0, (512 + (duty >> 6)));
+    pwm_set_duty(PWM_IDLE, (512 + (duty >> 6)));
 }

@@ -10,7 +10,6 @@ int main(void)
 
     for (;;)
     {
-        //fuel_pump_on();
         cooling_fan();
         water_pump();
         aux();

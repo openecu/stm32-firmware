@@ -20,17 +20,22 @@
 /* Injectors */
 #define INJ_COUNT               8
 #define INJ_VOLTAGE_SCALE_SIZE  8
+#define INJ_RPM_SCALE_SIZE      8
 
 /* Ignition channels */
 #define IGN_COUNT               8
 #define IGN_VOLTAGE_SCALE_SIZE  8
 
-#define MAIN_RPM_SCALE_SIZE     20
-#define MAIN_LOAD_SCALE_SIZE    20
-
 /* Tables */
-#define TABLE_RPM_SCALE_SIZE    20
-#define TABLE_LOAD_SCALE_SIZE   20
+#define TABLE_AFR_RPM_SCALE_SIZE    16
+#define TABLE_AFR_LOAD_SCALE_SIZE   16
+#define TABLE_IGN_RPM_SCALE_SIZE    16
+#define TABLE_IGN_LOAD_SCALE_SIZE   16
+#define TABLE_VE_RPM_SCALE_SIZE     16
+#define TABLE_VE_LOAD_SCALE_SIZE    16
+
+/* Sensors */
+#define TPS_FLAG_INV    0x01
 
 typedef struct
 {
@@ -60,8 +65,6 @@ typedef struct
 
 typedef struct
 {
-    // Deadtime vs battery voltage
-    uint16_t deadtime[INJ_VOLTAGE_SCALE_SIZE];
     // Multiplier
     uint16_t multiplier;
 } inj_config_t;
@@ -83,8 +86,8 @@ typedef struct
     /* Afterstart and Warm-Up */
     // Afterstart enrichment vs coolant temp
     int16_t afterstart_enrich[AFTERSTART_TEMP_SCALE_SIZE];
-    // Afterstart enrichment decay
-    uint8_t afterstart_enrich_decay;
+    // Afterstart enrichment decay vs coolant temp
+    uint16_t afterstart_enrich_decay[AFTERSTART_TEMP_SCALE_SIZE];
     // Warm-Up enrichment vs coolant temp
     int16_t warmup_enrich[WARMUP_TEMP_SCALE_SIZE];
 
@@ -107,44 +110,71 @@ typedef struct
     uint16_t fuel_pump_off_time;
 
     /* Water cooling */
-    /* Cooling fan switch temp */
+    // Cooling fan switch temp
     int8_t cooling_fan_temp;
-    /* Cooling fan temp hysteresis */
+    // Cooling fan temp hysteresis
     uint8_t cooling_fan_temp_hyst;
-    /* Water pump fan start temp */
+    // Water pump fan start temp
     int8_t water_pump_temp;
-    /* Water pump temp hysteresis */
+    // Water pump temp hysteresis
     uint8_t water_pump_temp_hyst;
 
     /* Auxiliary outputs */
     aux_config_t aux[AUX_COUNT];
 
     /* Injectors */
-    // Battery voltage scale size
+    // Battery voltage scale
     uint8_t inj_voltage_scale[INJ_VOLTAGE_SCALE_SIZE];
-    // Individual injectors config
+    // Deadtime vs battery voltage
+    uint16_t inj_deadtime[INJ_VOLTAGE_SCALE_SIZE];
+    // Injection start phase vs RPM
+    uint16_t inj_start_phase[INJ_RPM_SCALE_SIZE];
+    // Individual injector config
     inj_config_t inj[INJ_COUNT];
 
-    /* Ignition channels */
+    /* Ignition */
+    uint8_t ign_min_adv;
+    uint8_t ign_max_adv;
+    uint8_t ign_adv_step;
     // Dwell time vs battery voltage
     uint16_t ign_dwell[IGN_VOLTAGE_SCALE_SIZE];
 
-    /* Tables */
+    /* AFR table */
     // RPM scale
-    uint16_t table_rpm_scale[TABLE_RPM_SCALE_SIZE];
+    uint16_t table_afr_rpm_scale[TABLE_AFR_RPM_SCALE_SIZE];
     // Load scale
-    uint16_t table_load_scale[TABLE_LOAD_SCALE_SIZE];
-    // AFR table
-    int16_t table_afr[TABLE_RPM_SCALE_SIZE][TABLE_LOAD_SCALE_SIZE];
+    uint16_t table_afr_load_scale[TABLE_AFR_LOAD_SCALE_SIZE];
+    // Table
+    int16_t table_afr[TABLE_AFR_RPM_SCALE_SIZE][TABLE_AFR_LOAD_SCALE_SIZE];
+
+    /* Ignition timing advance table */
+    // RPM scale
+    uint16_t table_ign_rpm_scale[TABLE_ING_RPM_SCALE_SIZE];
+    // Load scale
+    uint16_t table_ign_load_scale[TABLE_IGN_LOAD_SCALE_SIZE];
     // Ignition timing advance
-    int16_t table_ign[TABLE_RPM_SCALE_SIZE][TABLE_LOAD_SCALE_SIZE];
+    int16_t table_ign[TABLE_IGN_RPM_SCALE_SIZE][TABLE_IGN_LOAD_SCALE_SIZE];
+
+    /* Volumetric efficiency table */
+    // RPM scale
+    uint16_t table_ve_rpm_scale[TABLE_VE_RPM_SCALE_SIZE];
+    // Load scale
+    uint16_t table_ve_load_scale[TABLE_VE_LOAD_SCALE_SIZE];
     // Volumetric efficiency
-    int16_t table_ve[TABLE_RPM_SCALE_SIZE][TABLE_LOAD_SCALE_SIZE];
+    int16_t table_ve[TABLE_VE_RPM_SCALE_SIZE][TABLE_VE_LOAD_SCALE_SIZE];
 
     /* Sensor */
     // TP
+    // 0 : TPS_FLAG_INV inverse voltage
+    uint8_t tps_flags;
+    uint16_t tps_min_voltage;
+    uint16_t tps_max_voltage;
     // MAF
     // MAP
+    int16_t maps_factor;
+    int16_t maps_offset;
+    uint16_t maps_min_voltage;
+    uint16_t maps_max_voltage;
     // IAT
     // ECT
 
