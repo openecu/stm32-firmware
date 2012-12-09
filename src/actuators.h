@@ -5,11 +5,6 @@
 #include <inttypes.h>
 #include "hwconf.h"
 
-#define ACTUATORS_OFF() ACTUATORS_GPIO->ODR &= ~ACTUATORS_PORT_MASK
-
-#define ACTUATOR_ON(name)   ACTUATORS_GPIO->ODR |= (1 << name##_PIN)
-#define ACTUATOR_OFF(name)  ACTUATORS_GPIO->ODR &= ~(1 << name##_PIN)
-
 void actuators_init(void);
 
 static inline void ecu_relay_on(void)
