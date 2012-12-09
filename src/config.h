@@ -12,30 +12,22 @@
 #define IDLE_TEMP_SCALE_SIZE    8
 #define IDLE_RPM_SCALE_SIZE     8
 
-/* Auxiliary outputs */
-#define AUX_COUNT       8
-#define AUX_FLAG_EN     0x01
-#define AUX_FLAG_INV    0x02
-
 /* Injectors */
-#define INJ_COUNT               8
+#define INJ_COUNT               4
 #define INJ_VOLTAGE_SCALE_SIZE  8
 #define INJ_RPM_SCALE_SIZE      8
 
 /* Ignition channels */
-#define IGN_COUNT               8
+#define IGN_COUNT               1
 #define IGN_VOLTAGE_SCALE_SIZE  8
 
 /* Tables */
-#define TABLE_AFR_RPM_SCALE_SIZE    16
-#define TABLE_AFR_LOAD_SCALE_SIZE   16
-#define TABLE_IGN_RPM_SCALE_SIZE    16
-#define TABLE_IGN_LOAD_SCALE_SIZE   16
 #define TABLE_VE_RPM_SCALE_SIZE     16
 #define TABLE_VE_LOAD_SCALE_SIZE    16
 
 /* Sensors */
-#define TPS_FLAG_INV    0x01
+#define MAFS_VOLTAGE_SCALE_SIZE 64
+#define ECTS_VOLTAGE_SCALE_SIZE 64
 
 typedef struct
 {
@@ -51,22 +43,8 @@ typedef struct
 
 typedef struct
 {
-    // Flags
-    // Bit 0 : AUX_FLAG_EN    enable output
-    // Bit 1 : AUX_FLAG_INV   invert output
-    uint8_t flags;
-    // RPM on/off
-    uint16_t rpm_on;
-    uint16_t rpm_off;
-    // Coolant temp on/off
-    int8_t ect_on;
-    int8_t ect_off;
-} aux_config_t;
-
-typedef struct
-{
     // Multiplier
-    uint16_t multiplier;
+    uint16_t mult;
 } inj_config_t;
 
 typedef struct
@@ -78,8 +56,6 @@ typedef struct
     int8_t crank_temp_scale[CRANK_TEMP_SCALE_SIZE];
     // Injector pulse width vs coolant temp
     uint16_t crank_pw[CRANK_TEMP_SCALE_SIZE];
-    // Enrichment vs coolant temp
-    //int16_t crank_enrich[CRANK_TEMP_SCALE_SIZE];
     // Ignition timing advance vs coolant temp
     int8_t crank_ign_adv[CRANK_TEMP_SCALE_SIZE];
 
@@ -100,13 +76,15 @@ typedef struct
     uint16_t idle_rpm[IDLE_TEMP_SCALE_SIZE];
     // Ignition timing advance vs RPM
     int8_t idle_ign_adv[IDLE_RPM_SCALE_SIZE];
+    // Target AFR
+    int8_t idle_afr;
     // Valve PID config
     pid_config_t idle_pid_config;
 
     /* Fuel pump */
     // Fuel pump duration after ignition switch on
     uint16_t fuel_pump_on_time;
-    // Fuel pump duration after ignition switch off
+    // Fuel pump duration after engine stop
     uint16_t fuel_pump_off_time;
 
     /* Water cooling */
@@ -114,15 +92,7 @@ typedef struct
     int8_t cooling_fan_temp;
     // Cooling fan temp hysteresis
     uint8_t cooling_fan_temp_hyst;
-    // Water pump fan start temp
-    int8_t water_pump_temp;
-    // Water pump temp hysteresis
-    uint8_t water_pump_temp_hyst;
 
-    /* Auxiliary outputs */
-    aux_config_t aux[AUX_COUNT];
-
-    /* Injectors */
     // Battery voltage scale
     uint8_t inj_voltage_scale[INJ_VOLTAGE_SCALE_SIZE];
     // Deadtime vs battery voltage
@@ -133,27 +103,14 @@ typedef struct
     inj_config_t inj[INJ_COUNT];
 
     /* Ignition */
+    // Minimum timing advance
     uint8_t ign_min_adv;
+    // Maximum timing advance
     uint8_t ign_max_adv;
+    // Limit timing advance change step
     uint8_t ign_adv_step;
     // Dwell time vs battery voltage
     uint16_t ign_dwell[IGN_VOLTAGE_SCALE_SIZE];
-
-    /* AFR table */
-    // RPM scale
-    uint16_t table_afr_rpm_scale[TABLE_AFR_RPM_SCALE_SIZE];
-    // Load scale
-    uint16_t table_afr_load_scale[TABLE_AFR_LOAD_SCALE_SIZE];
-    // Table
-    int16_t table_afr[TABLE_AFR_RPM_SCALE_SIZE][TABLE_AFR_LOAD_SCALE_SIZE];
-
-    /* Ignition timing advance table */
-    // RPM scale
-    uint16_t table_ign_rpm_scale[TABLE_ING_RPM_SCALE_SIZE];
-    // Load scale
-    uint16_t table_ign_load_scale[TABLE_IGN_LOAD_SCALE_SIZE];
-    // Ignition timing advance
-    int16_t table_ign[TABLE_IGN_RPM_SCALE_SIZE][TABLE_IGN_LOAD_SCALE_SIZE];
 
     /* Volumetric efficiency table */
     // RPM scale
@@ -163,20 +120,28 @@ typedef struct
     // Volumetric efficiency
     int16_t table_ve[TABLE_VE_RPM_SCALE_SIZE][TABLE_VE_LOAD_SCALE_SIZE];
 
-    /* Sensor */
-    // TP
-    // 0 : TPS_FLAG_INV inverse voltage
-    uint8_t tps_flags;
+    /* Sensors */
+    // Throttle position sensor
+    // Minimum voltage
     uint16_t tps_min_voltage;
+    // Maximum voltage
     uint16_t tps_max_voltage;
-    // MAF
-    // MAP
-    int16_t maps_factor;
-    int16_t maps_offset;
-    uint16_t maps_min_voltage;
-    uint16_t maps_max_voltage;
-    // IAT
-    // ECT
+
+    // Mass air flow sensor
+    // Minimum voltage
+    uint16_t mafs_min_voltage;
+    // Maximum voltage
+    uint16_t mafs_max_voltage;
+    // Mass air flow vs output voltage
+    uint16_t mafs_calibration[MAFS_VOLTAGE_SCALE_SIZE];
+
+    // Engine coolant temp sensor
+    // Minimum voltage
+    uint16_t ects_min_voltage;
+    // Maximum voltage
+    uint16_t ects_max_voltage;
+    // Mass air flow vs output voltage
+    uint16_t ects_calibration[ECTS_VOLTAGE_SCALE_SIZE];
 
 } config_t;
 
