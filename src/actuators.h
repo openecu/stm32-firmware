@@ -3,13 +3,7 @@
 
 #include <stm32f4xx.h>
 #include <inttypes.h>
-
-#define ECU_RELAY_PIN   0
-#define FUEL_PUMP_PIN   1
-#define COOLING_FAN_PIN 2
-
-#define ACTUATORS_GPIO      GPIOA
-#define ACTUATORS_PORT_MASK ((1 << ECU_RELAY_PIN) | (1 << FUEL_PUMP_PIN) | (1 << COOLING_FAN_PIN))
+#include "hwconf.h"
 
 #define ACTUATORS_OFF() ACTUATORS_GPIO->ODR &= ~ACTUATORS_PORT_MASK
 
