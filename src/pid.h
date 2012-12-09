@@ -2,14 +2,7 @@
 #define _PID_H
 
 #include <inttypes.h>
-
-typedef struct
-{
-    uint8_t kp;
-    uint8_t ki;
-    uint8_t kd;
-    uint32_t integral_max;
-} pid_config_t;
+#include "config.h"
 
 typedef struct
 {
