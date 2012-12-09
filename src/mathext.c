@@ -35,16 +35,14 @@ uint8_t table_index(int16_t *value, int16_t values[], uint8_t size)
     {
         (*value) = values[last_index];
 
-        return last_index;
+        return (last_index - 1);
     }
-    else
+
+    for (index = 1; index < size; index++)
     {
-        for (index = 1; index < size; index++)
+        if ((*value) < values[index])
         {
-            if ((*value) < values[index])
-            {
-                break;
-            }
+            break;
         }
     }
 
