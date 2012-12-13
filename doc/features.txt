@@ -1,0 +1,12 @@
+Injector outputs: 8
+Ignition outputs: 8
+Idle conrol: PWM valve/stepper motor
+Digital outputs: 16 (8 low current, 4 medium current, 4 high current) (main relay, starter motor relay, ignition coil relay, fuel pump relay, cooling fan relay, water pump relay, check engine lamp, tachometer, vtec, etc.)
+PWM outputs: 8 (3 independent channel) (ego heater, idle control, boost control, drive-by-wire throttle control, vvt, evap)
+Analog inputs: 18 (tp, maf, map, iat, ect, ego, afr, egt, knock) 
+Trigger inputs: 4 (ckps, cmps, vss)
+Digital inputs: 8 (ignition switch, starter switch, etc.)
+Boost control: open/closed loop, gear based
+Electronic throttle control (Drive-by-Wire)
+O2 closed loop control
+Communication: RS232, USB, CAN
