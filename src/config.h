@@ -3,6 +3,7 @@
 
 /* Cranking */
 #define CRANK_TEMP_SCALE_SIZE   8
+#define CRANK_CYCLE_SCALE_SIZE  8
 
 /* Afterstart and Warm-Up */
 #define AFTERSTART_TEMP_SCALE_SIZE  8
@@ -43,19 +44,19 @@ typedef struct
 
 typedef struct
 {
-    // Multiplier
-    uint16_t mult;
-} inj_config_t;
-
-typedef struct
-{
     /* Cranking */
     // Cranking threshold RPM
     uint16_t crank_thres_rpm;
     // Engine coolant temp scale
     int8_t crank_temp_scale[CRANK_TEMP_SCALE_SIZE];
-    // Injector pulse width vs coolant temp
-    uint16_t crank_pw[CRANK_TEMP_SCALE_SIZE];
+    // Base load vs coolant temp
+    uint16_t crank_base_load[CRANK_TEMP_SCALE_SIZE];
+    //
+    uint16_t crank_cycle_scale[CRANK_CYCLE_SCALE_SIZE];
+    //
+    int16_t crank_cycle_enrich[CRANK_CYCLE_SCALE_SIZE];
+    //
+    uint16_t crank_inj_angle;
     // Ignition timing advance vs coolant temp
     int8_t crank_ign_adv[CRANK_TEMP_SCALE_SIZE];
 
@@ -75,9 +76,9 @@ typedef struct
     // Target RPM vs coolant temp
     uint16_t idle_rpm[IDLE_TEMP_SCALE_SIZE];
     // Ignition timing advance vs RPM
-    int8_t idle_ign_adv[IDLE_RPM_SCALE_SIZE];
+    int16_t idle_ign_adv[IDLE_RPM_SCALE_SIZE];
     // Target AFR
-    int8_t idle_afr;
+    uint16_t idle_afr;
     // Valve PID config
     pid_config_t idle_pid_config;
 
@@ -97,10 +98,10 @@ typedef struct
     uint8_t inj_voltage_scale[INJ_VOLTAGE_SCALE_SIZE];
     // Deadtime vs battery voltage
     uint16_t inj_deadtime[INJ_VOLTAGE_SCALE_SIZE];
-    // Injection start phase vs RPM
-    uint16_t inj_start_phase[INJ_RPM_SCALE_SIZE];
-    // Individual injector config
-    inj_config_t inj[INJ_COUNT];
+    // Injection start angle vs RPM
+    uint16_t inj_angle[INJ_RPM_SCALE_SIZE];
+    // Injector multiplier
+    uint16_t inj_mult;
 
     /* Ignition */
     // Minimum timing advance

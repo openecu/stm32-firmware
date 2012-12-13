@@ -5,8 +5,10 @@ typedef struct
 {
     uint16_t rpm;
     uint16_t tp;
+    int16_t dtp;
     uint16_t maf;
-    int8_t ect;
+    int16_t ect;
+    uint16_t vbat;
 } sensors_t;
 
 #endif
