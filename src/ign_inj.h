@@ -1,5 +1,5 @@
-#ifndef _INJECTION_H
-#define _INJECTION_H
+#ifndef _IGN_INJ_H
+#define _IGN_INJ_H
 
 #include <inttypes.h>
 

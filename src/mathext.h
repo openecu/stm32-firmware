@@ -16,6 +16,8 @@ uint8_t table_index(int16_t *value, int16_t values[], uint8_t size);
 
 int16_t table1d_lookup(int16_t x, uint8_t nx, int16_t vx[], int16_t *data);
 
+int16_t table1df_lookup(int16_t x, uint8_t nx, int16_t xmin, int16_t xmax, int16_t data[]);
+
 int16_t table2d_lookup(
     int16_t x, int16_t y,
     uint8_t nx, uint8_t ny,

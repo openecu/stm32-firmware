@@ -60,6 +60,26 @@ int16_t table1d_lookup(int16_t x, uint8_t nx, int16_t vx[], int16_t *data)
     return linear_interp(_x, data[ix], data[ix + 1], vx[ix], vx[ix + 1]);
 }
 
+int16_t table1df_lookup(int16_t x, uint8_t nx, int16_t xmin, int16_t xmax, int16_t data[])
+{
+    uint8_t ix;
+    int16_t s;
+
+    if (x <= xmin)
+    {
+        return data[0];
+    }
+    else if (x >= xmax)
+    {
+        return data[(nx - 1)];
+    }
+
+    s = (xmax - xmin) / nx;
+    ix = x / s;
+
+    return linear_interp(x, data[ix], data[ix + 1], (s * ix), (s * (ix + 1)));
+}
+
 int16_t table2d_lookup(
     int16_t x, int16_t y,
     uint8_t nx, uint8_t ny,
