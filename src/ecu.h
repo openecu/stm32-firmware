@@ -12,10 +12,8 @@ typedef struct
 {
     config_t config;
     sensors_t sensors;
-    uint16_t airflow;
-    uint16_t load;
-    uint16_t pw;
     uint8_t mode;
+    uint32_t cycle_time;
 } ecu_t;
 
 ecu_t ecu;

@@ -3,7 +3,9 @@
 
 #include <inttypes.h>
 
-void restrict_value(int32_t *value, int32_t min, int32_t max);
+void restrict16(int16_t *value, int16_t min, int16_t max);
+
+void restrict32(int32_t *value, int32_t min, int32_t max);
 
 int16_t linear_interp(int16_t x, int16_t y0, int16_t y1, int16_t x0, int16_t x1);
 

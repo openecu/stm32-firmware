@@ -23,8 +23,8 @@
 #define IGN_VOLTAGE_SCALE_SIZE  8
 
 /* Tables */
-#define TABLE_VE_RPM_SCALE_SIZE     16
-#define TABLE_VE_LOAD_SCALE_SIZE    16
+#define TABLE_AFR_RPM_SCALE_SIZE     16
+#define TABLE_AFR_LOAD_SCALE_SIZE    16
 
 /* Sensors */
 #define MAFS_VOLTAGE_SCALE_SIZE 64
@@ -50,7 +50,9 @@ typedef struct
     // Engine coolant temp scale
     int8_t crank_temp_scale[CRANK_TEMP_SCALE_SIZE];
     // Base load vs coolant temp
-    uint16_t crank_base_load[CRANK_TEMP_SCALE_SIZE];
+    uint16_t crank_load[CRANK_TEMP_SCALE_SIZE];
+    //
+    uint16_t crank_afr;
     //
     uint16_t crank_cycle_scale[CRANK_CYCLE_SCALE_SIZE];
     //
@@ -65,6 +67,8 @@ typedef struct
     int16_t afterstart_enrich[AFTERSTART_TEMP_SCALE_SIZE];
     // Afterstart enrichment decay vs coolant temp
     uint16_t afterstart_enrich_decay[AFTERSTART_TEMP_SCALE_SIZE];
+    //
+    int16_t warmup_temp_scale[WARMUP_TEMP_SCALE_SIZE];
     // Warm-Up enrichment vs coolant temp
     int16_t warmup_enrich[WARMUP_TEMP_SCALE_SIZE];
 
@@ -115,13 +119,13 @@ typedef struct
     // Dwell time vs battery voltage
     uint16_t ign_dwell[IGN_VOLTAGE_SCALE_SIZE];
 
-    /* Volumetric efficiency table */
+    /* Target AFR table */
     // RPM scale
-    uint16_t table_ve_rpm_scale[TABLE_VE_RPM_SCALE_SIZE];
+    uint16_t table_afr_rpm_scale[TABLE_AFR_RPM_SCALE_SIZE];
     // Load scale
-    uint16_t table_ve_load_scale[TABLE_VE_LOAD_SCALE_SIZE];
+    uint16_t table_afr_load_scale[TABLE_AFR_LOAD_SCALE_SIZE];
     // Volumetric efficiency
-    int16_t table_ve[TABLE_VE_RPM_SCALE_SIZE][TABLE_VE_LOAD_SCALE_SIZE];
+    int16_t table_afr[TABLE_AFR_RPM_SCALE_SIZE][TABLE_AFR_LOAD_SCALE_SIZE];
 
     /* Sensors */
     // Throttle position sensor

@@ -1,11 +1,9 @@
-#ifndef _IGN_INJ_H
-#define _IGN_INJ_H
+#ifndef _INJECTION_H
+#define _INJECTION_H
 
 #include <inttypes.h>
 
 void calc_pw(void);
-
-void calc_ign_adv(void);
 
 void afterstart(void);
 

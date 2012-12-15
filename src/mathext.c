@@ -1,6 +1,18 @@
 #include "mathext.h"
 
-void restrict_value(int32_t *value, int32_t min, int32_t max)
+void restrict_i16(int16_t *value, int16_t min, int16_t max)
+{
+    if ((*value) < min)
+    {
+        (*value) = min;
+    }
+    else if ((*value) > max)
+    {
+        (*value) = max;
+    }
+}
+
+void restrict_i32(int32_t *value, int32_t min, int32_t max)
 {
     if ((*value) < min)
     {
