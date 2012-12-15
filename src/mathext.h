@@ -3,6 +3,8 @@
 
 #include <inttypes.h>
 
+void restrict_value(int32_t *value, int32_t min, int32_t max);
+
 int16_t linear_interp(int16_t x, int16_t y0, int16_t y1, int16_t x0, int16_t x1);
 
 int16_t bilinear_interp(

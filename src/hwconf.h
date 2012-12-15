@@ -35,6 +35,11 @@
 /* Idle */
 #define PWM_IDLE    PWM_CH0
 
+/* Synchronization */
+#define SYNC_GPIO           GPIOB
+#define SYNC_POS_PIN        10
+#define SYNC_REF_PIN        11
+#define SYNC_REF_STATE()    (SYNC_GPIO->IDR & (1 << SYNC_REF_PIN))
 
 static inline void hw_init(void)
 {
@@ -67,13 +72,33 @@ static void TIM2_IRQHandler(void)
     else if (TIM2->SR & TIM_SR_CC3IF)
     {
         TIM2->SR &= ~TIM_SR_CC3IF;
-        sync_pos_CAPT_ISR();
+        sync_pos_trig();
     }
     else if (TIM2->SR & TIM_SR_CC4IF)
     {
         TIM2->SR &= ~TIM_SR_CC4IF;
-        sync_ref_CAPT_ISR();
+        sync_ref_trig();
     }
+}
+
+static void TIM3_IRQHandler(void)
+{
+
+}
+
+static void TIM5_IRQHandler(void)
+{
+
+}
+
+static void TIM4_IRQHandler(void)
+{
+
+}
+
+static void TIM8_IRQHandler(void)
+{
+
 }
 
 #endif

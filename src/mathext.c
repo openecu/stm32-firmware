@@ -1,5 +1,17 @@
 #include "mathext.h"
 
+void restrict_value(int32_t *value, int32_t min, int32_t max)
+{
+    if ((*value) < min)
+    {
+        (*value) = min;
+    }
+    else if ((*value) > max)
+    {
+        (*value) = max;
+    }
+}
+
 int16_t linear_interp(int16_t x, int16_t y0, int16_t y1, int16_t x0, int16_t x1)
 {
     return (y0 + (int32_t)((y1 - y0) * (x - x0)) / (x1 - x0));
@@ -49,7 +61,7 @@ uint8_t table_index(int16_t *value, int16_t values[], uint8_t size)
     return (index - 1);
 }
 
-int16_t table1d_lookup(int16_t x, uint8_t nx, int16_t vx[], int16_t *data)
+int16_t table1d_lookup(int16_t x, uint8_t nx, int16_t vx[], int16_t data[])
 {
     uint8_t ix;
     int16_t _x;
@@ -84,7 +96,7 @@ int16_t table2d_lookup(
     int16_t x, int16_t y,
     uint8_t nx, uint8_t ny,
     int16_t vx[], int16_t vy[],
-    int16_t **data
+    int16_t *data[]
 )
 {
     uint8_t ix, iy;

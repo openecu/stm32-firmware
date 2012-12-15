@@ -100,6 +100,8 @@ typedef struct
     uint16_t inj_deadtime[INJ_VOLTAGE_SCALE_SIZE];
     // Injection start angle vs RPM
     uint16_t inj_angle[INJ_RPM_SCALE_SIZE];
+    // Maximum pulsewidth vs RPM
+    uint16_t inj_max_pw[INJ_RPM_SCALE_SIZE];
     // Injector multiplier
     uint16_t inj_mult;
 

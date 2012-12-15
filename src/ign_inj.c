@@ -62,10 +62,7 @@ void calc_pw(void)
         (int16_t*)ecu.config.inj_voltage_scale, (int16_t*)ecu.config.inj_deadtime
     );
 
-    if (pw > 0xFFFF)
-    {
-        pw = 0xFFFF;
-    }
+    restrict_value((int32_t*)&pw, 0, 0x8000);
 }
 
 void calc_ign_adv(void)
