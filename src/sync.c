@@ -7,14 +7,7 @@ sync_t sync;
 
 void sync_init(void)
 {
-    sync.new_cycle = 0;
-    sync.pos = 0;
-    sync.ref = 0;
-    sync.ref_time = 0;
-    sync.ref_dt = 0;
-    sync.pos_time = 0;
-    sync.pos_dt = 0;
-    sync.ref_pos = 0;
+
 }
 
 uint8_t sync_is_new_cycle(void)
@@ -39,28 +32,29 @@ void sync_calc_rpm(void)
     }
 }
 
-void tim2_ic0_irq_isr(void)
+void sync_pos_CAPT_ISR(void)
 {
     sync.pos++;
 }
 
-void tim2_ic1_irq_isr(void)
+void sync_ref_CAPT_ISR(void)
 {
-    sync.ref++;
-
     // Rising edge
-    if (1)
+    if (GPIOB->IDR & (1 << 11))
     {
         sync.ref_pos = sync.pos;
+    }
+    // Falling edge
+    else
+    {
+        sync.ref++;
 
         if (sync.ref_pos < 85) // 85?
         {
             sync.ref = 0;
         }
-    }
-    // Falling edge
-    else
-    {
+
+        sync.pos = 0;
         sync.ref_dt = TIM1->CNT - sync.ref_time;
         sync.ref_time = TIM1->CNT;
     }
