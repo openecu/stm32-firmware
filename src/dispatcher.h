@@ -3,8 +3,6 @@
 
 #include <inttypes.h>
 
-void dispatcher_init(void);
-
-void dispatcher_control(void);
+void dispatcher(void);
 
 #endif

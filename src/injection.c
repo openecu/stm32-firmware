@@ -17,6 +17,7 @@ void calc_pw(void)
             (int16_t*)ecu.config.crank_temp_scale, (int16_t*)ecu.config.crank_load);
         uint16_t crank_cycle_enrich = table1d_lookup((crank_cycles++), CRANK_CYCLE_SCALE_SIZE, 
             (int16_t*)ecu.config.crank_cycle_scale, (int16_t*)ecu.config.crank_cycle_enrich);
+
         fuel = (load * 100) / ecu.config.crank_afr;
         fuel = (fuel * crank_cycle_enrich) / 100;
     }
@@ -40,15 +41,18 @@ void calc_pw(void)
 
         uint16_t warmup_enrich = table1d_lookup(ecu.sensors.ect, WARMUP_TEMP_SCALE_SIZE, 
             (int16_t*)ecu.config.warmup_temp_scale, (int16_t*)ecu.config.warmup_enrich);
+
         fuel = (load * 100) / afr;
         fuel = (fuel * warmup_enrich) / 100;
     }
 
     pw = fuel / ecu.config.inj_mult;
-    pw += table1d_lookup(
+
+    uint16_t deadtime = table1d_lookup(
         ecu.sensors.vbat, INJ_VOLTAGE_SCALE_SIZE,
         (int16_t*)ecu.config.inj_voltage_scale, (int16_t*)ecu.config.inj_deadtime
     );
+    pw += deadtime;
 
-    restrict_i32((int32_t*)&pw, 0, 0x8000);
+    restrict_i32((int32_t*)&pw, 0, 0x8000); // max. 32 ms?
 }
