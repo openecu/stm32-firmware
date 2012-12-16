@@ -53,6 +53,5 @@ void calc_pw(void)
         (int16_t*)ecu.config.inj_voltage_scale, (int16_t*)ecu.config.inj_deadtime
     );
     pw += deadtime;
-
-    restrict_i32((int32_t*)&pw, 0, 0x8000); // max. 32 ms?
+    pw = (uint16_t)restrict_value((int32_t)pw, 0, 0x8000); // max. 32 ms?
 }

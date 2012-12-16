@@ -5,10 +5,14 @@ void dispatcher(void)
 {
     if (ecu.mode == MODE_CRANKING)
     {
+        if (ecu.sensors.rpm >= ecu.config.crank_rpm_thres)
+        {
+            ecu.mode = MODE_IDLING;
+        }
     }
     else if (ecu.mode == MODE_IDLING)
     {
-        if (ecu.sensors.tp > 0) // tps threshold vs rpm?
+        if (ecu.sensors.tp > 0)
         {
             ecu.mode = MODE_POWER;
         }
