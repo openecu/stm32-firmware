@@ -4,16 +4,19 @@
 
 #define ACTS_GPIO   GPIOG
 
-#define ACTS_FAN_ODR            GPIO_ODR_ODR_0
-#define ACTS_VVT_ODR            GPIO_ODR_ODR_1
-#define ACTS_FUEL_PUMP_ODR      GPIO_ODR_ODR_2
+#define ACTS_FAN_ODR        GPIO_ODR_ODR_0
+#define ACTS_VVT_ODR        GPIO_ODR_ODR_1
+#define ACTS_FUEL_PUMP_ODR  GPIO_ODR_ODR_2
+#define ACTS_MAIN_RELAY_ODR GPIO_ODR_ODR_3
 
 #define ACTS_FLAGS1_FAN             0x00000001
 #define ACTS_FLAGS1_VVT             0x00000002
 #define ACTS_FLAGS1_FUEL_PUMP       0x00000004
 #define ACTS_FLAGS1_FUEL_PUMP_PRIME 0x00000008
+#define ACTS_FLAGS1_MAIN_RELAY      0x00000010
 
 extern ecu_t ecu;
+
 uint32_t flags1;
 uint32_t fuel_pump_time;
 
@@ -29,6 +32,34 @@ void actuators_init(void)
 
     flags1 |= ACTS_FLAGS1_FUEL_PUMP_PRIME;
     fuel_pump_time = 0;
+}
+
+/**
+ * Управление главным реле.
+ */
+void main_relay(void)
+{
+    // Если зажигание включено, то включаем главное реле 
+    if ((ecu.status.flags2 & STATUS_FLAGS2_IGN_SW))
+    {
+        flags1 |= ACTS_FLAGS1_MAIN_RELAY;
+    }
+    // Если зажигание выключено, то выключаем главное реле
+    else
+    {
+        flags1 &= ~ACTS_FLAGS1_MAIN_RELAY;
+    }
+
+    if ((flags1 & ACTS_FLAGS1_MAIN_RELAY))
+    {
+        ecu.status.flags2 |= STATUS_FLAGS2_MAIN_RELAY;
+        ACTS_GPIO->ODR |= ACTS_MAIN_RELAY_ODR;
+    }
+    else
+    {
+        ecu.status.flags2 &= ~STATUS_FLAGS2_MAIN_RELAY;
+        ACTS_GPIO->ODR &= ~ACTS_MAIN_RELAY_ODR;   
+    }
 }
 
 /**

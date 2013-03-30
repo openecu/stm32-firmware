@@ -3,6 +3,8 @@
 
 #include <stdint.h>
 
+void main_relay(void);
+
 void fuel_pump(uint32_t dtime);
 
 void actuators_init(void);
