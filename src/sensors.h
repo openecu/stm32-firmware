@@ -7,6 +7,8 @@ typedef struct sensors_s
 {
     uint16_t rpm;
     int16_t ect;
+    uint16_t tp;
+    uint16_t tp_prev[8];
 } sensors_t;
 
 #endif

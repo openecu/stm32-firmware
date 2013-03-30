@@ -5,7 +5,7 @@
 
 void warmup_enrich(void);
 
-void accel_enrich(void);
+void accel_enrich(uint32_t dtime);
 
 void inj_afr(void);
 

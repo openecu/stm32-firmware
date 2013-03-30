@@ -12,6 +12,13 @@ typedef struct config_s
 
     uint16_t vvt_rpm_thres;
     uint16_t vvt_rpm_hyst;
+
+    uint16_t accel_enrich_delta_thres;
+    uint16_t accel_enrich_delay;
+    uint16_t accel_enrich_decay;
+    uint16_t accel_delta_enrich[16];
+    uint16_t accel_rpm_enrich[16];
+    uint16_t accel_ect_enrich[16];
 } config_t;
 
 #endif

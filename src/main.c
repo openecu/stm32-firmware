@@ -22,6 +22,9 @@ int main(void)
 
     for (;;)
     {
+        /* Управление главным реле */
+        main_relay();
+
         /* События на каждый новый такт двигателя */
         if ((ecu.status.flags1 & STATUS_FLAGS1_STROKE))
         {
@@ -39,13 +42,13 @@ int main(void)
             mtime1 = ecu.status.mtime;
 
             fuel_pump(dtime1);
-            //accel_enrich(dtime1);
+            accel_enrich(dtime1);
             //idle(dtime1);
         }
 
         /* 
             События на каждую итерацию.
-            Часть событий распределена по итерациям, для более точного выполнения
+            Часть событий распределена по итерациям для более точного выполнения
             событий с заданным интервалом.
         */
         calc_load();
