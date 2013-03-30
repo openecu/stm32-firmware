@@ -2,10 +2,12 @@
 Allocating common symbols
 Common symbol       size              file
 
-ecu                 0x1c              target/main.o
-flags1              0x4               target/actuators.o
+acce_delay          0x2               target/injection.o
+ecu                 0x9c              target/main.o
+flags1              0x4               target/injection.o
 fuel_pump_time      0x4               target/actuators.o
 execount            0x4               target/main.o
+acce                0x2               target/injection.o
 
 Discarded input sections
 
@@ -20,9 +22,9 @@ Discarded input sections
  .init_array    0x00000000        0x4 h:/development/openecu/tools/codesourcery/bin/../lib/gcc/arm-none-eabi/4.4.1/thumb2/crtbegin.o
  .fini_array    0x00000000        0x4 h:/development/openecu/tools/codesourcery/bin/../lib/gcc/arm-none-eabi/4.4.1/thumb2/crtbegin.o
  .jcr           0x00000000        0x0 h:/development/openecu/tools/codesourcery/bin/../lib/gcc/arm-none-eabi/4.4.1/thumb2/crtbegin.o
- .text          0x00000000       0x14 C:\Users\Sergey\AppData\Local\Temp\ccbsDYBB.o
- .data          0x00000000        0x0 C:\Users\Sergey\AppData\Local\Temp\ccbsDYBB.o
- .bss           0x00000000        0x0 C:\Users\Sergey\AppData\Local\Temp\ccbsDYBB.o
+ .text          0x00000000       0x14 C:\Users\Sergey\AppData\Local\Temp\cc4yVQeL.o
+ .data          0x00000000        0x0 C:\Users\Sergey\AppData\Local\Temp\cc4yVQeL.o
+ .bss           0x00000000        0x0 C:\Users\Sergey\AppData\Local\Temp\cc4yVQeL.o
  .data          0x00000000        0x0 target/main.o
  .bss           0x00000000        0x0 target/main.o
  .data          0x00000000        0x0 target/calc.o
@@ -64,7 +66,7 @@ Linker script and memory map
 
 LOAD h:/development/openecu/tools/codesourcery/bin/../lib/gcc/arm-none-eabi/4.4.1/thumb2/crti.o
 LOAD h:/development/openecu/tools/codesourcery/bin/../lib/gcc/arm-none-eabi/4.4.1/thumb2/crtbegin.o
-LOAD C:\Users\Sergey\AppData\Local\Temp\ccbsDYBB.o
+LOAD C:\Users\Sergey\AppData\Local\Temp\cc4yVQeL.o
 LOAD target/main.o
 LOAD target/calc.o
 LOAD target/injection.o
@@ -88,7 +90,7 @@ LOAD h:/development/openecu/tools/codesourcery/bin/../lib/gcc/arm-none-eabi/4.4.
 .isr_vector     0x08000000      0x188
                 0x08000000                . = ALIGN (0x4)
  *(.isr_vector)
- .isr_vector    0x08000000      0x188 C:\Users\Sergey\AppData\Local\Temp\ccbsDYBB.o
+ .isr_vector    0x08000000      0x188 C:\Users\Sergey\AppData\Local\Temp\cc4yVQeL.o
                 0x08000000                g_pfnVectors
                 0x08000188                . = ALIGN (0x4)
 
@@ -97,154 +99,155 @@ LOAD h:/development/openecu/tools/codesourcery/bin/../lib/gcc/arm-none-eabi/4.4.
  *(.flashtext)
                 0x08000188                . = ALIGN (0x4)
 
-.text           0x08000188      0x440
+.text           0x08000188      0x54c
                 0x08000188                . = ALIGN (0x4)
  *(.text)
- .text          0x08000188       0x98 target/main.o
+ .text          0x08000188       0xa4 target/main.o
                 0x08000188                main
- .text          0x08000220        0x4 target/calc.o
-                0x08000220                calc_load
-                0x08000222                calc_rpm
- .text          0x08000224        0xc target/injection.o
-                0x08000224                warmup_enrich
-                0x08000226                accel_enrich
-                0x08000228                inj_afr
-                0x0800022a                inj_trim
-                0x0800022c                inj_calc_pw
-                0x0800022e                inj_timing
- .text          0x08000230        0x4 target/ignition.o
-                0x08000230                ign_timing
-                0x08000232                ign_dwell
- .text          0x08000234      0x1c4 target/actuators.o
-                0x08000234                actuators_init
-                0x08000268                fuel_pump
-                0x08000300                cooling_fan
-                0x0800037c                vvt
- .text          0x080003f8        0x2 target/comm.o
-                0x080003f8                comm
- *fill*         0x080003fa        0x2 00
- .text          0x080003fc      0x184 target/system_stm32f4xx.o
-                0x080003fc                SystemCoreClockUpdate
-                0x08000494                SystemInit
+ .text          0x0800022c        0x4 target/calc.o
+                0x0800022c                calc_load
+                0x0800022e                calc_rpm
+ .text          0x08000230       0xb8 target/injection.o
+                0x08000230                warmup_enrich
+                0x08000232                accel_enrich
+                0x080002e0                inj_afr
+                0x080002e2                inj_trim
+                0x080002e4                inj_calc_pw
+                0x080002e6                inj_timing
+ .text          0x080002e8        0x4 target/ignition.o
+                0x080002e8                ign_timing
+                0x080002ea                ign_dwell
+ .text          0x080002ec      0x218 target/actuators.o
+                0x080002ec                actuators_init
+                0x08000320                main_relay
+                0x08000374                fuel_pump
+                0x0800040c                cooling_fan
+                0x08000488                vvt
+ .text          0x08000504        0x2 target/comm.o
+                0x08000504                comm
+ *fill*         0x08000506        0x2 00
+ .text          0x08000508      0x184 target/system_stm32f4xx.o
+                0x08000508                SystemCoreClockUpdate
+                0x080005a0                SystemInit
  *(.text.*)
  .text.Reset_Handler
-                0x08000580       0x44 C:\Users\Sergey\AppData\Local\Temp\ccbsDYBB.o
-                0x08000580                Reset_Handler
+                0x0800068c       0x44 C:\Users\Sergey\AppData\Local\Temp\cc4yVQeL.o
+                0x0800068c                Reset_Handler
  .text.Default_Handler
-                0x080005c4        0x2 C:\Users\Sergey\AppData\Local\Temp\ccbsDYBB.o
-                0x080005c4                RTC_Alarm_IRQHandler
-                0x080005c4                HASH_RNG_IRQHandler
-                0x080005c4                EXTI2_IRQHandler
-                0x080005c4                TIM8_CC_IRQHandler
-                0x080005c4                DebugMon_Handler
-                0x080005c4                TIM1_CC_IRQHandler
-                0x080005c4                DMA2_Stream5_IRQHandler
-                0x080005c4                HardFault_Handler
-                0x080005c4                DMA1_Stream5_IRQHandler
-                0x080005c4                SysTick_Handler
-                0x080005c4                PVD_IRQHandler
-                0x080005c4                SDIO_IRQHandler
-                0x080005c4                TAMP_STAMP_IRQHandler
-                0x080005c4                PendSV_Handler
-                0x080005c4                NMI_Handler
-                0x080005c4                CAN2_RX1_IRQHandler
-                0x080005c4                EXTI3_IRQHandler
-                0x080005c4                TIM8_TRG_COM_TIM14_IRQHandler
-                0x080005c4                TIM1_UP_TIM10_IRQHandler
-                0x080005c4                TIM8_UP_TIM13_IRQHandler
-                0x080005c4                I2C3_ER_IRQHandler
-                0x080005c4                EXTI0_IRQHandler
-                0x080005c4                I2C2_EV_IRQHandler
-                0x080005c4                DMA1_Stream2_IRQHandler
-                0x080005c4                CAN1_RX0_IRQHandler
-                0x080005c4                FPU_IRQHandler
-                0x080005c4                OTG_HS_WKUP_IRQHandler
-                0x080005c4                UsageFault_Handler
-                0x080005c4                CAN2_SCE_IRQHandler
-                0x080005c4                DMA2_Stream2_IRQHandler
-                0x080005c4                SPI1_IRQHandler
-                0x080005c4                TIM6_DAC_IRQHandler
-                0x080005c4                TIM1_BRK_TIM9_IRQHandler
-                0x080005c4                DCMI_IRQHandler
-                0x080005c4                CAN2_RX0_IRQHandler
-                0x080005c4                DMA2_Stream3_IRQHandler
-                0x080005c4                USART6_IRQHandler
-                0x080005c4                USART3_IRQHandler
-                0x080005c4                CRYP_IRQHandler
-                0x080005c4                CAN1_RX1_IRQHandler
-                0x080005c4                UART5_IRQHandler
-                0x080005c4                DMA2_Stream0_IRQHandler
-                0x080005c4                TIM4_IRQHandler
-                0x080005c4                I2C1_EV_IRQHandler
-                0x080005c4                DMA1_Stream6_IRQHandler
-                0x080005c4                DMA1_Stream1_IRQHandler
-                0x080005c4                UART4_IRQHandler
-                0x080005c4                TIM3_IRQHandler
-                0x080005c4                RCC_IRQHandler
-                0x080005c4                TIM8_BRK_TIM12_IRQHandler
-                0x080005c4                Default_Handler
-                0x080005c4                EXTI15_10_IRQHandler
-                0x080005c4                ADC_IRQHandler
-                0x080005c4                DMA1_Stream7_IRQHandler
-                0x080005c4                TIM7_IRQHandler
-                0x080005c4                CAN2_TX_IRQHandler
-                0x080005c4                TIM5_IRQHandler
-                0x080005c4                DMA2_Stream7_IRQHandler
-                0x080005c4                I2C3_EV_IRQHandler
-                0x080005c4                EXTI9_5_IRQHandler
-                0x080005c4                RTC_WKUP_IRQHandler
-                0x080005c4                ETH_WKUP_IRQHandler
-                0x080005c4                SPI2_IRQHandler
-                0x080005c4                OTG_HS_EP1_IN_IRQHandler
-                0x080005c4                MemManage_Handler
-                0x080005c4                DMA1_Stream0_IRQHandler
-                0x080005c4                CAN1_TX_IRQHandler
-                0x080005c4                SVC_Handler
-                0x080005c4                EXTI4_IRQHandler
-                0x080005c4                FSMC_IRQHandler
-                0x080005c4                ETH_IRQHandler
-                0x080005c4                OTG_HS_EP1_OUT_IRQHandler
-                0x080005c4                WWDG_IRQHandler
-                0x080005c4                TIM2_IRQHandler
-                0x080005c4                OTG_FS_WKUP_IRQHandler
-                0x080005c4                TIM1_TRG_COM_TIM11_IRQHandler
-                0x080005c4                OTG_HS_IRQHandler
-                0x080005c4                EXTI1_IRQHandler
-                0x080005c4                USART2_IRQHandler
-                0x080005c4                I2C2_ER_IRQHandler
-                0x080005c4                DMA2_Stream1_IRQHandler
-                0x080005c4                CAN1_SCE_IRQHandler
-                0x080005c4                FLASH_IRQHandler
-                0x080005c4                DMA2_Stream4_IRQHandler
-                0x080005c4                BusFault_Handler
-                0x080005c4                USART1_IRQHandler
-                0x080005c4                OTG_FS_IRQHandler
-                0x080005c4                SPI3_IRQHandler
-                0x080005c4                DMA1_Stream4_IRQHandler
-                0x080005c4                I2C1_ER_IRQHandler
-                0x080005c4                DMA2_Stream6_IRQHandler
-                0x080005c4                DMA1_Stream3_IRQHandler
+                0x080006d0        0x2 C:\Users\Sergey\AppData\Local\Temp\cc4yVQeL.o
+                0x080006d0                RTC_Alarm_IRQHandler
+                0x080006d0                HASH_RNG_IRQHandler
+                0x080006d0                EXTI2_IRQHandler
+                0x080006d0                TIM8_CC_IRQHandler
+                0x080006d0                DebugMon_Handler
+                0x080006d0                TIM1_CC_IRQHandler
+                0x080006d0                DMA2_Stream5_IRQHandler
+                0x080006d0                HardFault_Handler
+                0x080006d0                DMA1_Stream5_IRQHandler
+                0x080006d0                SysTick_Handler
+                0x080006d0                PVD_IRQHandler
+                0x080006d0                SDIO_IRQHandler
+                0x080006d0                TAMP_STAMP_IRQHandler
+                0x080006d0                PendSV_Handler
+                0x080006d0                NMI_Handler
+                0x080006d0                CAN2_RX1_IRQHandler
+                0x080006d0                EXTI3_IRQHandler
+                0x080006d0                TIM8_TRG_COM_TIM14_IRQHandler
+                0x080006d0                TIM1_UP_TIM10_IRQHandler
+                0x080006d0                TIM8_UP_TIM13_IRQHandler
+                0x080006d0                I2C3_ER_IRQHandler
+                0x080006d0                EXTI0_IRQHandler
+                0x080006d0                I2C2_EV_IRQHandler
+                0x080006d0                DMA1_Stream2_IRQHandler
+                0x080006d0                CAN1_RX0_IRQHandler
+                0x080006d0                FPU_IRQHandler
+                0x080006d0                OTG_HS_WKUP_IRQHandler
+                0x080006d0                UsageFault_Handler
+                0x080006d0                CAN2_SCE_IRQHandler
+                0x080006d0                DMA2_Stream2_IRQHandler
+                0x080006d0                SPI1_IRQHandler
+                0x080006d0                TIM6_DAC_IRQHandler
+                0x080006d0                TIM1_BRK_TIM9_IRQHandler
+                0x080006d0                DCMI_IRQHandler
+                0x080006d0                CAN2_RX0_IRQHandler
+                0x080006d0                DMA2_Stream3_IRQHandler
+                0x080006d0                USART6_IRQHandler
+                0x080006d0                USART3_IRQHandler
+                0x080006d0                CRYP_IRQHandler
+                0x080006d0                CAN1_RX1_IRQHandler
+                0x080006d0                UART5_IRQHandler
+                0x080006d0                DMA2_Stream0_IRQHandler
+                0x080006d0                TIM4_IRQHandler
+                0x080006d0                I2C1_EV_IRQHandler
+                0x080006d0                DMA1_Stream6_IRQHandler
+                0x080006d0                DMA1_Stream1_IRQHandler
+                0x080006d0                UART4_IRQHandler
+                0x080006d0                TIM3_IRQHandler
+                0x080006d0                RCC_IRQHandler
+                0x080006d0                TIM8_BRK_TIM12_IRQHandler
+                0x080006d0                Default_Handler
+                0x080006d0                EXTI15_10_IRQHandler
+                0x080006d0                ADC_IRQHandler
+                0x080006d0                DMA1_Stream7_IRQHandler
+                0x080006d0                TIM7_IRQHandler
+                0x080006d0                CAN2_TX_IRQHandler
+                0x080006d0                TIM5_IRQHandler
+                0x080006d0                DMA2_Stream7_IRQHandler
+                0x080006d0                I2C3_EV_IRQHandler
+                0x080006d0                EXTI9_5_IRQHandler
+                0x080006d0                RTC_WKUP_IRQHandler
+                0x080006d0                ETH_WKUP_IRQHandler
+                0x080006d0                SPI2_IRQHandler
+                0x080006d0                OTG_HS_EP1_IN_IRQHandler
+                0x080006d0                MemManage_Handler
+                0x080006d0                DMA1_Stream0_IRQHandler
+                0x080006d0                CAN1_TX_IRQHandler
+                0x080006d0                SVC_Handler
+                0x080006d0                EXTI4_IRQHandler
+                0x080006d0                FSMC_IRQHandler
+                0x080006d0                ETH_IRQHandler
+                0x080006d0                OTG_HS_EP1_OUT_IRQHandler
+                0x080006d0                WWDG_IRQHandler
+                0x080006d0                TIM2_IRQHandler
+                0x080006d0                OTG_FS_WKUP_IRQHandler
+                0x080006d0                TIM1_TRG_COM_TIM11_IRQHandler
+                0x080006d0                OTG_HS_IRQHandler
+                0x080006d0                EXTI1_IRQHandler
+                0x080006d0                USART2_IRQHandler
+                0x080006d0                I2C2_ER_IRQHandler
+                0x080006d0                DMA2_Stream1_IRQHandler
+                0x080006d0                CAN1_SCE_IRQHandler
+                0x080006d0                FLASH_IRQHandler
+                0x080006d0                DMA2_Stream4_IRQHandler
+                0x080006d0                BusFault_Handler
+                0x080006d0                USART1_IRQHandler
+                0x080006d0                OTG_FS_IRQHandler
+                0x080006d0                SPI3_IRQHandler
+                0x080006d0                DMA1_Stream4_IRQHandler
+                0x080006d0                I2C1_ER_IRQHandler
+                0x080006d0                DMA2_Stream6_IRQHandler
+                0x080006d0                DMA1_Stream3_IRQHandler
  *(.rodata)
  *(.rodata*)
  *(.glue_7)
  .glue_7        0x00000000        0x0 linker stubs
  *(.glue_7t)
  .glue_7t       0x00000000        0x0 linker stubs
-                0x080005c8                . = ALIGN (0x4)
- *fill*         0x080005c6        0x2 00
-                0x080005c8                _etext = .
-                0x080005c8                _sidata = _etext
+                0x080006d4                . = ALIGN (0x4)
+ *fill*         0x080006d2        0x2 00
+                0x080006d4                _etext = .
+                0x080006d4                _sidata = _etext
 
-.vfp11_veneer   0x080005c8        0x0
+.vfp11_veneer   0x080006d4        0x0
  .vfp11_veneer  0x00000000        0x0 linker stubs
 
-.v4_bx          0x080005c8        0x0
+.v4_bx          0x080006d4        0x0
  .v4_bx         0x00000000        0x0 linker stubs
 
 .ROarraySection
  *(.ROarraySection)
 
-.data           0x20000000       0x14 load address 0x080005c8
+.data           0x20000000       0x14 load address 0x080006d4
                 0x20000000                . = ALIGN (0x4)
                 0x20000000                _sdata = .
  *(.data)
@@ -255,29 +258,33 @@ LOAD h:/development/openecu/tools/codesourcery/bin/../lib/gcc/arm-none-eabi/4.4.
                 0x20000014                . = ALIGN (0x4)
                 0x20000014                _edata = .
 
-.bss            0x20000014       0x28 load address 0x080005dc
+.bss            0x20000014       0xb0 load address 0x080006e8
                 0x20000014                . = ALIGN (0x4)
                 0x20000014                _sbss = .
  *(.bss)
  *(COMMON)
- COMMON         0x20000014       0x20 target/main.o
+ COMMON         0x20000014       0xa0 target/main.o
                 0x20000014                ecu
-                0x20000030                execount
- COMMON         0x20000034        0x8 target/actuators.o
-                0x20000034                flags1
-                0x20000038                fuel_pump_time
-                0x2000003c                . = ALIGN (0x4)
-                0x2000003c                _ebss = .
-                0x2000003c                PROVIDE (end, _ebss)
-                0x2000003c                PROVIDE (_end, _ebss)
+                0x200000b0                execount
+ COMMON         0x200000b4        0xa target/injection.o
+                0x200000b4                acce_delay
+                0x200000b8                flags1
+                0x200000bc                acce
+ *fill*         0x200000be        0x2 00
+ COMMON         0x200000c0        0x4 target/actuators.o
+                0x200000c0                fuel_pump_time
+                0x200000c4                . = ALIGN (0x4)
+                0x200000c4                _ebss = .
+                0x200000c4                PROVIDE (end, _ebss)
+                0x200000c4                PROVIDE (_end, _ebss)
 
-._usrstack      0x2000003c      0x100 load address 0x08000604
-                0x2000003c                . = ALIGN (0x4)
-                0x2000003c                _susrstack = .
-                0x2000013c                . = (. + _Minimum_Stack_Size)
- *fill*         0x2000003c      0x100 00
-                0x2000013c                . = ALIGN (0x4)
-                0x2000013c                _eusrstack = .
+._usrstack      0x200000c4      0x100 load address 0x08000798
+                0x200000c4                . = ALIGN (0x4)
+                0x200000c4                _susrstack = .
+                0x200001c4                . = (. + _Minimum_Stack_Size)
+ *fill*         0x200000c4      0x100 00
+                0x200001c4                . = ALIGN (0x4)
+                0x200001c4                _eusrstack = .
 
 .b1text
  *(.b1text)
@@ -334,7 +341,7 @@ DISCARD
  .ARM.attributes
                 0x00000019       0x29 h:/development/openecu/tools/codesourcery/bin/../lib/gcc/arm-none-eabi/4.4.1/thumb2/crtbegin.o
  .ARM.attributes
-                0x00000042       0x21 C:\Users\Sergey\AppData\Local\Temp\ccbsDYBB.o
+                0x00000042       0x21 C:\Users\Sergey\AppData\Local\Temp\cc4yVQeL.o
  .ARM.attributes
                 0x00000063       0x31 target/main.o
  .ARM.attributes
