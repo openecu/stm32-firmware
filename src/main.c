@@ -1,33 +1,51 @@
 #include <stm32f4xx.h>
 #include "ecu.h"
-#include "hwconf.h"
-#include "actuators.h"
-#include "sync.h"
+#include "calc.h"
 #include "injection.h"
 #include "ignition.h"
-#include "dispatcher.h"
-#include "mathext.h"
+#include "actuators.h"
+#include "comm.h"
 
-extern ecu_t ecu;
+volatile ecu_t ecu;
 
 int main(void)
 {
-    hw_init();
+    __disable_irq();
+
     actuators_init();
+
+    __enable_irq();
 
     for (;;)
     {
-        cooling_fan();
-        // evap();
-        // ego_heater();
-
-        if (sync_is_new_cycle())
+        if ((ecu.status.flags1 & STATUS_FLAGS1_STROKE))
         {
-            sync_wait_cycle();
-            sync_calc_rpm();
-            calc_pw();
-            calc_ign_adv();
-            dispatcher();
+            ecu.status.flags1 &= ~STATUS_FLAGS1_STROKE;
+            calc_rpm();
         }
+
+        calc_load();
+
+        /*if ((ecu.status1.times1 & STATUS_TIMES1_))
+        {
+            accel_enrich();
+            idle();
+        }*/
+
+        warmup_enrich();
+        inj_afr();
+        inj_trim();
+        inj_timing();
+        inj_calc_pw();
+
+        ign_dwell();
+        ign_timing();
+
+        cooling_fan();
+        vvt();
+
+        comm();
     }
+
+    return 0;
 }

@@ -1,14 +1,18 @@
 #ifndef _INJECTION_H
 #define _INJECTION_H
 
-#include <inttypes.h>
+#include <stdint.h>
 
-void calc_pw(void);
+void warmup_enrich(void);
 
-void afterstart(void);
+void accel_enrich(void);
 
-void warmup(void);
+void inj_afr(void);
 
-void accel(void);
+void inj_trim(void);
+
+void inj_calc_pw(void);
+
+void inj_timing(void);
 
 #endif

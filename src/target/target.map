@@ -1,0 +1,412 @@
+
+Allocating common symbols
+Common symbol       size              file
+
+ecu                 0x10              target/main.o
+flags1              0x4               target/actuators.o
+
+Discarded input sections
+
+ .text          0x00000000        0x0 h:/development/openecu/tools/codesourcery/bin/../lib/gcc/arm-none-eabi/4.4.1/thumb2/crti.o
+ .data          0x00000000        0x0 h:/development/openecu/tools/codesourcery/bin/../lib/gcc/arm-none-eabi/4.4.1/thumb2/crti.o
+ .bss           0x00000000        0x0 h:/development/openecu/tools/codesourcery/bin/../lib/gcc/arm-none-eabi/4.4.1/thumb2/crti.o
+ .init          0x00000000        0x4 h:/development/openecu/tools/codesourcery/bin/../lib/gcc/arm-none-eabi/4.4.1/thumb2/crti.o
+ .fini          0x00000000        0x4 h:/development/openecu/tools/codesourcery/bin/../lib/gcc/arm-none-eabi/4.4.1/thumb2/crti.o
+ .text          0x00000000       0x30 h:/development/openecu/tools/codesourcery/bin/../lib/gcc/arm-none-eabi/4.4.1/thumb2/crtbegin.o
+ .data          0x00000000        0x4 h:/development/openecu/tools/codesourcery/bin/../lib/gcc/arm-none-eabi/4.4.1/thumb2/crtbegin.o
+ .bss           0x00000000        0x1 h:/development/openecu/tools/codesourcery/bin/../lib/gcc/arm-none-eabi/4.4.1/thumb2/crtbegin.o
+ .init_array    0x00000000        0x4 h:/development/openecu/tools/codesourcery/bin/../lib/gcc/arm-none-eabi/4.4.1/thumb2/crtbegin.o
+ .fini_array    0x00000000        0x4 h:/development/openecu/tools/codesourcery/bin/../lib/gcc/arm-none-eabi/4.4.1/thumb2/crtbegin.o
+ .jcr           0x00000000        0x0 h:/development/openecu/tools/codesourcery/bin/../lib/gcc/arm-none-eabi/4.4.1/thumb2/crtbegin.o
+ .text          0x00000000       0x14 C:\Users\Sergey\AppData\Local\Temp\ccfCE3Wm.o
+ .data          0x00000000        0x0 C:\Users\Sergey\AppData\Local\Temp\ccfCE3Wm.o
+ .bss           0x00000000        0x0 C:\Users\Sergey\AppData\Local\Temp\ccfCE3Wm.o
+ .data          0x00000000        0x0 target/main.o
+ .bss           0x00000000        0x0 target/main.o
+ .data          0x00000000        0x0 target/calc.o
+ .bss           0x00000000        0x0 target/calc.o
+ .data          0x00000000        0x0 target/injection.o
+ .bss           0x00000000        0x0 target/injection.o
+ .data          0x00000000        0x0 target/ignition.o
+ .bss           0x00000000        0x0 target/ignition.o
+ .data          0x00000000        0x0 target/actuators.o
+ .bss           0x00000000        0x0 target/actuators.o
+ .data          0x00000000        0x0 target/comm.o
+ .bss           0x00000000        0x0 target/comm.o
+ .bss           0x00000000        0x0 target/system_stm32f4xx.o
+ .text          0x00000000        0x0 h:/development/openecu/tools/codesourcery/bin/../lib/gcc/arm-none-eabi/4.4.1/thumb2/crtend.o
+ .data          0x00000000        0x0 h:/development/openecu/tools/codesourcery/bin/../lib/gcc/arm-none-eabi/4.4.1/thumb2/crtend.o
+ .bss           0x00000000        0x0 h:/development/openecu/tools/codesourcery/bin/../lib/gcc/arm-none-eabi/4.4.1/thumb2/crtend.o
+ .jcr           0x00000000        0x4 h:/development/openecu/tools/codesourcery/bin/../lib/gcc/arm-none-eabi/4.4.1/thumb2/crtend.o
+ .text          0x00000000        0x0 h:/development/openecu/tools/codesourcery/bin/../lib/gcc/arm-none-eabi/4.4.1/thumb2/crtn.o
+ .data          0x00000000        0x0 h:/development/openecu/tools/codesourcery/bin/../lib/gcc/arm-none-eabi/4.4.1/thumb2/crtn.o
+ .bss           0x00000000        0x0 h:/development/openecu/tools/codesourcery/bin/../lib/gcc/arm-none-eabi/4.4.1/thumb2/crtn.o
+ .init          0x00000000        0x8 h:/development/openecu/tools/codesourcery/bin/../lib/gcc/arm-none-eabi/4.4.1/thumb2/crtn.o
+ .fini          0x00000000        0x8 h:/development/openecu/tools/codesourcery/bin/../lib/gcc/arm-none-eabi/4.4.1/thumb2/crtn.o
+
+Memory Configuration
+
+Name             Origin             Length             Attributes
+RAM              0x20000000         0x00020000         xrw
+CCMRAM           0x10000000         0x00010000         xrw
+FLASH            0x08000000         0x00100000         xr
+FLASHB1          0x00000000         0x00000000         xr
+EXTMEMB0         0x00000000         0x00000000         xr
+EXTMEMB1         0x00000000         0x00000000         xr
+EXTMEMB2         0x00000000         0x00000000         xr
+EXTMEMB3         0x00000000         0x00000000         xr
+MEMORY_ARRAY     0x20002000         0x00000020         xrw
+*default*        0x00000000         0xffffffff
+
+Linker script and memory map
+
+LOAD h:/development/openecu/tools/codesourcery/bin/../lib/gcc/arm-none-eabi/4.4.1/thumb2/crti.o
+LOAD h:/development/openecu/tools/codesourcery/bin/../lib/gcc/arm-none-eabi/4.4.1/thumb2/crtbegin.o
+LOAD C:\Users\Sergey\AppData\Local\Temp\ccfCE3Wm.o
+LOAD target/main.o
+LOAD target/calc.o
+LOAD target/injection.o
+LOAD target/ignition.o
+LOAD target/actuators.o
+LOAD target/comm.o
+LOAD target/system_stm32f4xx.o
+START GROUP
+LOAD h:/development/openecu/tools/codesourcery/bin/../lib/gcc/arm-none-eabi/4.4.1/thumb2\libgcc.a
+LOAD h:/development/openecu/tools/codesourcery/bin/../lib/gcc/arm-none-eabi/4.4.1/../../../../arm-none-eabi/lib/thumb2\libc.a
+END GROUP
+LOAD h:/development/openecu/tools/codesourcery/bin/../lib/gcc/arm-none-eabi/4.4.1/thumb2/crtend.o
+LOAD h:/development/openecu/tools/codesourcery/bin/../lib/gcc/arm-none-eabi/4.4.1/thumb2/crtn.o
+                0x00000400                __Stack_Size = 0x400
+                0x00000400                PROVIDE (_Stack_Size, __Stack_Size)
+                0x2001fc00                __Stack_Init = (_estack - __Stack_Size)
+                0x2001fc00                PROVIDE (_Stack_Init, __Stack_Init)
+                0x00000100                _Minimum_Stack_Size = 0x100
+                0x20020000                _estack = 0x20020000
+
+.isr_vector     0x08000000      0x188
+                0x08000000                . = ALIGN (0x4)
+ *(.isr_vector)
+ .isr_vector    0x08000000      0x188 C:\Users\Sergey\AppData\Local\Temp\ccfCE3Wm.o
+                0x08000000                g_pfnVectors
+                0x08000188                . = ALIGN (0x4)
+
+.flashtext      0x08000188        0x0
+                0x08000188                . = ALIGN (0x4)
+ *(.flashtext)
+                0x08000188                . = ALIGN (0x4)
+
+.text           0x08000188      0x33c
+                0x08000188                . = ALIGN (0x4)
+ *(.text)
+ .text          0x08000188       0x40 target/main.o
+                0x08000188                main
+ .text          0x080001c8        0x4 target/calc.o
+                0x080001c8                calc_load
+                0x080001ca                calc_rpm
+ .text          0x080001cc        0xc target/injection.o
+                0x080001cc                warmup_enrich
+                0x080001ce                accel_enrich
+                0x080001d0                inj_afr
+                0x080001d2                inj_trim
+                0x080001d4                inj_calc_pw
+                0x080001d6                inj_timing
+ .text          0x080001d8        0x4 target/ignition.o
+                0x080001d8                ign_timing
+                0x080001da                ign_dwell
+ .text          0x080001dc      0x118 target/actuators.o
+                0x080001dc                actuators_init
+                0x080001fc                cooling_fan
+                0x08000278                vvt
+ .text          0x080002f4        0x2 target/comm.o
+                0x080002f4                comm
+ *fill*         0x080002f6        0x2 00
+ .text          0x080002f8      0x184 target/system_stm32f4xx.o
+                0x080002f8                SystemCoreClockUpdate
+                0x08000390                SystemInit
+ *(.text.*)
+ .text.Reset_Handler
+                0x0800047c       0x44 C:\Users\Sergey\AppData\Local\Temp\ccfCE3Wm.o
+                0x0800047c                Reset_Handler
+ .text.Default_Handler
+                0x080004c0        0x2 C:\Users\Sergey\AppData\Local\Temp\ccfCE3Wm.o
+                0x080004c0                RTC_Alarm_IRQHandler
+                0x080004c0                HASH_RNG_IRQHandler
+                0x080004c0                EXTI2_IRQHandler
+                0x080004c0                TIM8_CC_IRQHandler
+                0x080004c0                DebugMon_Handler
+                0x080004c0                TIM1_CC_IRQHandler
+                0x080004c0                DMA2_Stream5_IRQHandler
+                0x080004c0                HardFault_Handler
+                0x080004c0                DMA1_Stream5_IRQHandler
+                0x080004c0                SysTick_Handler
+                0x080004c0                PVD_IRQHandler
+                0x080004c0                SDIO_IRQHandler
+                0x080004c0                TAMP_STAMP_IRQHandler
+                0x080004c0                PendSV_Handler
+                0x080004c0                NMI_Handler
+                0x080004c0                CAN2_RX1_IRQHandler
+                0x080004c0                EXTI3_IRQHandler
+                0x080004c0                TIM8_TRG_COM_TIM14_IRQHandler
+                0x080004c0                TIM1_UP_TIM10_IRQHandler
+                0x080004c0                TIM8_UP_TIM13_IRQHandler
+                0x080004c0                I2C3_ER_IRQHandler
+                0x080004c0                EXTI0_IRQHandler
+                0x080004c0                I2C2_EV_IRQHandler
+                0x080004c0                DMA1_Stream2_IRQHandler
+                0x080004c0                CAN1_RX0_IRQHandler
+                0x080004c0                FPU_IRQHandler
+                0x080004c0                OTG_HS_WKUP_IRQHandler
+                0x080004c0                UsageFault_Handler
+                0x080004c0                CAN2_SCE_IRQHandler
+                0x080004c0                DMA2_Stream2_IRQHandler
+                0x080004c0                SPI1_IRQHandler
+                0x080004c0                TIM6_DAC_IRQHandler
+                0x080004c0                TIM1_BRK_TIM9_IRQHandler
+                0x080004c0                DCMI_IRQHandler
+                0x080004c0                CAN2_RX0_IRQHandler
+                0x080004c0                DMA2_Stream3_IRQHandler
+                0x080004c0                USART6_IRQHandler
+                0x080004c0                USART3_IRQHandler
+                0x080004c0                CRYP_IRQHandler
+                0x080004c0                CAN1_RX1_IRQHandler
+                0x080004c0                UART5_IRQHandler
+                0x080004c0                DMA2_Stream0_IRQHandler
+                0x080004c0                TIM4_IRQHandler
+                0x080004c0                I2C1_EV_IRQHandler
+                0x080004c0                DMA1_Stream6_IRQHandler
+                0x080004c0                DMA1_Stream1_IRQHandler
+                0x080004c0                UART4_IRQHandler
+                0x080004c0                TIM3_IRQHandler
+                0x080004c0                RCC_IRQHandler
+                0x080004c0                TIM8_BRK_TIM12_IRQHandler
+                0x080004c0                Default_Handler
+                0x080004c0                EXTI15_10_IRQHandler
+                0x080004c0                ADC_IRQHandler
+                0x080004c0                DMA1_Stream7_IRQHandler
+                0x080004c0                TIM7_IRQHandler
+                0x080004c0                CAN2_TX_IRQHandler
+                0x080004c0                TIM5_IRQHandler
+                0x080004c0                DMA2_Stream7_IRQHandler
+                0x080004c0                I2C3_EV_IRQHandler
+                0x080004c0                EXTI9_5_IRQHandler
+                0x080004c0                RTC_WKUP_IRQHandler
+                0x080004c0                ETH_WKUP_IRQHandler
+                0x080004c0                SPI2_IRQHandler
+                0x080004c0                OTG_HS_EP1_IN_IRQHandler
+                0x080004c0                MemManage_Handler
+                0x080004c0                DMA1_Stream0_IRQHandler
+                0x080004c0                CAN1_TX_IRQHandler
+                0x080004c0                SVC_Handler
+                0x080004c0                EXTI4_IRQHandler
+                0x080004c0                FSMC_IRQHandler
+                0x080004c0                ETH_IRQHandler
+                0x080004c0                OTG_HS_EP1_OUT_IRQHandler
+                0x080004c0                WWDG_IRQHandler
+                0x080004c0                TIM2_IRQHandler
+                0x080004c0                OTG_FS_WKUP_IRQHandler
+                0x080004c0                TIM1_TRG_COM_TIM11_IRQHandler
+                0x080004c0                OTG_HS_IRQHandler
+                0x080004c0                EXTI1_IRQHandler
+                0x080004c0                USART2_IRQHandler
+                0x080004c0                I2C2_ER_IRQHandler
+                0x080004c0                DMA2_Stream1_IRQHandler
+                0x080004c0                CAN1_SCE_IRQHandler
+                0x080004c0                FLASH_IRQHandler
+                0x080004c0                DMA2_Stream4_IRQHandler
+                0x080004c0                BusFault_Handler
+                0x080004c0                USART1_IRQHandler
+                0x080004c0                OTG_FS_IRQHandler
+                0x080004c0                SPI3_IRQHandler
+                0x080004c0                DMA1_Stream4_IRQHandler
+                0x080004c0                I2C1_ER_IRQHandler
+                0x080004c0                DMA2_Stream6_IRQHandler
+                0x080004c0                DMA1_Stream3_IRQHandler
+ *(.rodata)
+ *(.rodata*)
+ *(.glue_7)
+ .glue_7        0x00000000        0x0 linker stubs
+ *(.glue_7t)
+ .glue_7t       0x00000000        0x0 linker stubs
+                0x080004c4                . = ALIGN (0x4)
+ *fill*         0x080004c2        0x2 00
+                0x080004c4                _etext = .
+                0x080004c4                _sidata = _etext
+
+.vfp11_veneer   0x080004c4        0x0
+ .vfp11_veneer  0x00000000        0x0 linker stubs
+
+.v4_bx          0x080004c4        0x0
+ .v4_bx         0x00000000        0x0 linker stubs
+
+.ROarraySection
+ *(.ROarraySection)
+
+.data           0x20000000       0x14 load address 0x080004c4
+                0x20000000                . = ALIGN (0x4)
+                0x20000000                _sdata = .
+ *(.data)
+ .data          0x20000000       0x14 target/system_stm32f4xx.o
+                0x20000000                SystemCoreClock
+                0x20000004                AHBPrescTable
+ *(.data.*)
+                0x20000014                . = ALIGN (0x4)
+                0x20000014                _edata = .
+
+.bss            0x20000014       0x14 load address 0x080004d8
+                0x20000014                . = ALIGN (0x4)
+                0x20000014                _sbss = .
+ *(.bss)
+ *(COMMON)
+ COMMON         0x20000014       0x10 target/main.o
+                0x20000014                ecu
+ COMMON         0x20000024        0x4 target/actuators.o
+                0x20000024                flags1
+                0x20000028                . = ALIGN (0x4)
+                0x20000028                _ebss = .
+                0x20000028                PROVIDE (end, _ebss)
+                0x20000028                PROVIDE (_end, _ebss)
+
+._usrstack      0x20000028      0x100 load address 0x080004ec
+                0x20000028                . = ALIGN (0x4)
+                0x20000028                _susrstack = .
+                0x20000128                . = (. + _Minimum_Stack_Size)
+ *fill*         0x20000028      0x100 00
+                0x20000128                . = ALIGN (0x4)
+                0x20000128                _eusrstack = .
+
+.b1text
+ *(.b1text)
+ *(.b1rodata)
+ *(.b1rodata*)
+
+.eb0text
+ *(.eb0text)
+ *(.eb0rodata)
+ *(.eb0rodata*)
+
+.eb1text
+ *(.eb1text)
+ *(.eb1rodata)
+ *(.eb1rodata*)
+
+.eb2text
+ *(.eb2text)
+ *(.eb2rodata)
+ *(.eb2rodata*)
+
+.eb3text
+ *(.eb3text)
+ *(.eb3rodata)
+ *(.eb3rodata*)
+
+DISCARD
+ libc.a(*)
+ libm.a(*)
+ libgcc.a(*)
+
+.stab
+ *(.stab)
+
+.stabstr
+ *(.stabstr)
+
+.stab.excl
+ *(.stab.excl)
+
+.stab.exclstr
+ *(.stab.exclstr)
+
+.stab.index
+ *(.stab.index)
+
+.stab.indexstr
+ *(.stab.indexstr)
+
+.ARM.attributes
+                0x00000000       0x2d
+ .ARM.attributes
+                0x00000000       0x19 h:/development/openecu/tools/codesourcery/bin/../lib/gcc/arm-none-eabi/4.4.1/thumb2/crti.o
+ .ARM.attributes
+                0x00000019       0x29 h:/development/openecu/tools/codesourcery/bin/../lib/gcc/arm-none-eabi/4.4.1/thumb2/crtbegin.o
+ .ARM.attributes
+                0x00000042       0x21 C:\Users\Sergey\AppData\Local\Temp\ccfCE3Wm.o
+ .ARM.attributes
+                0x00000063       0x31 target/main.o
+ .ARM.attributes
+                0x00000094       0x31 target/calc.o
+ .ARM.attributes
+                0x000000c5       0x31 target/injection.o
+ .ARM.attributes
+                0x000000f6       0x31 target/ignition.o
+ .ARM.attributes
+                0x00000127       0x31 target/actuators.o
+ .ARM.attributes
+                0x00000158       0x31 target/comm.o
+ .ARM.attributes
+                0x00000189       0x31 target/system_stm32f4xx.o
+ .ARM.attributes
+                0x000001ba       0x29 h:/development/openecu/tools/codesourcery/bin/../lib/gcc/arm-none-eabi/4.4.1/thumb2/crtend.o
+ .ARM.attributes
+                0x000001e3       0x19 h:/development/openecu/tools/codesourcery/bin/../lib/gcc/arm-none-eabi/4.4.1/thumb2/crtn.o
+
+.comment        0x00000000      0x12d
+ *(.comment)
+ .comment       0x00000000       0x2b target/main.o
+ .comment       0x0000002b       0x2b target/calc.o
+ .comment       0x00000056       0x2b target/injection.o
+ .comment       0x00000081       0x2b target/ignition.o
+ .comment       0x000000ac       0x2b target/actuators.o
+ .comment       0x000000d7       0x2b target/comm.o
+ .comment       0x00000102       0x2b target/system_stm32f4xx.o
+
+.debug
+ *(.debug)
+
+.line
+ *(.line)
+
+.debug_srcinfo
+ *(.debug_srcinfo)
+
+.debug_sfnames
+ *(.debug_sfnames)
+
+.debug_aranges
+ *(.debug_aranges)
+
+.debug_pubnames
+ *(.debug_pubnames)
+
+.debug_info
+ *(.debug_info .gnu.linkonce.wi.*)
+
+.debug_abbrev
+ *(.debug_abbrev)
+
+.debug_line
+ *(.debug_line)
+
+.debug_frame
+ *(.debug_frame)
+
+.debug_str
+ *(.debug_str)
+
+.debug_loc
+ *(.debug_loc)
+
+.debug_macinfo
+ *(.debug_macinfo)
+
+.debug_weaknames
+ *(.debug_weaknames)
+
+.debug_funcnames
+ *(.debug_funcnames)
+
+.debug_typenames
+ *(.debug_typenames)
+
+.debug_varnames
+ *(.debug_varnames)
+OUTPUT(target/target.elf elf32-littlearm)
