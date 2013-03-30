@@ -5,6 +5,8 @@
 
 typedef struct config_s
 {
+    uint16_t fuel_pump_prime_time;
+
     int16_t fan_ect_thres;
     uint8_t fan_ect_hyst;
 
