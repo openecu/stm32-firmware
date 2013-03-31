@@ -6,7 +6,8 @@
 #include "actuators.h"
 #include "comm.h"
 
-volatile ecu_t ecu;
+extern ecu_t ecu;
+
 uint32_t execount;
 
 int main(void)

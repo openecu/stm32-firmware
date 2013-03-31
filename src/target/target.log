@@ -1,2 +1,2 @@
    text	   data	    bss	    dec	    hex	filename
-   1748	     20	    432	   2200	    898	target/target.elf
+   2120	     20	    548	   2688	    a80	target/target.elf

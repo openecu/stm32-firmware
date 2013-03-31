@@ -23,6 +23,13 @@ typedef struct status_s
     uint32_t flags3;
     uint32_t mtime;
     uint32_t utime;
+    uint16_t load;
+    uint16_t acce;
+    uint16_t wue;
+    uint16_t ase;
+    uint16_t enrich;
+    uint16_t afr;
+    uint16_t injpw;
 } status_t;
 
 #endif

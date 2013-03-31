@@ -67,7 +67,7 @@ void main_relay(void)
  */
 void fuel_pump(uint32_t dtime)
 {
-    // Если двигатель запущен или в режиме пуска, то принудительно включаем бензонасос
+    // Если двигатель запущен или в режиме пуска, то включаем бензонасос
     if (
         (ecu.status.flags1 & STATUS_FLAGS1_RUN)
         || (ecu.status.flags1 & STATUS_FLAGS1_CRANK)
@@ -120,7 +120,7 @@ void fuel_pump(uint32_t dtime)
  */
 void cooling_fan(void)
 {
-    // Если двигатель не запущен или в режиме пуска, то принудительно отключаем вентилятор
+    // Если двигатель не запущен или в режиме пуска, то отключаем вентилятор
     if (
         !(ecu.status.flags1 & STATUS_FLAGS1_RUN) 
         || (ecu.status.flags1 & STATUS_FLAGS1_CRANK)
@@ -171,7 +171,7 @@ void cooling_fan(void)
  */
 void vvt(void)
 {
-    // Если двигатель не запущен или в режиме пуска, то принудительно отключаем соленоид
+    // Если двигатель не запущен или в режиме пуска, то отключаем соленоид
     if (
         !(ecu.status.flags1 & STATUS_FLAGS1_RUN) 
         || (ecu.status.flags1 & STATUS_FLAGS1_CRANK)

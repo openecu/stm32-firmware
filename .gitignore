@@ -1,3 +1,4 @@
-bin/*
-src/target/*
+/bin
+/src/target
 .DS_Store
+
