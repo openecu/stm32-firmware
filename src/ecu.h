@@ -13,6 +13,6 @@ typedef struct ecu_s
     sensors_t sensors;
 } ecu_t;
 
-ecu_t ecu;
+extern ecu_t ecu;
 
 #endif

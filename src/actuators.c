@@ -26,8 +26,8 @@ uint32_t fuel_pump_time;
 void actuators_init(void)
 {
     ACTS_GPIO->MODER = 0x55555555;
-    ACTS_GPIO->OTYPER |= 0x0000FFFF;
-    //ACTS_GPIO->OSPEEDR = 0x55555555;
+    ACTS_GPIO->OTYPER &= ~0x0000FFFF;
+    ACTS_GPIO->OSPEEDR = 0x55555555;
     ACTS_GPIO->ODR = 0x00000000;
 
     flags1 |= ACTS_FLAGS1_FUEL_PUMP_PRIME;

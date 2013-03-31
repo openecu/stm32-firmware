@@ -12,20 +12,20 @@ extern ecu_t ecu;
 void switch_init(void)
 {
     SWITCH_GPIO->MODER &= ~0x0000FFFF;
-    SWITCH_GPIO->OSPEEDR |= 0x00005555;
+    //SWITCH_GPIO->OSPEEDR |= 0x00005555;
     SWITCH_GPIO->PUPDR |= 0x00005555;
 }
 
 void switch_update(void)
 {
-    uint32_t swst = SWITCH_GPIO->IDR & 0x000000FF;
+    //uint32_t swst = ;
     uint32_t flags = 0;
 
-    if ((swst & SWITCH_IGN_ODR))
+    if ((SWITCH_GPIO->IDR & SWITCH_IGN_ODR))
     {
         flags |= STATUS_FLAGS2_IGN_SW;
     }
-    else if ((swst & SWITCH_START_ODR))
+    else if ((SWITCH_GPIO->IDR & SWITCH_START_ODR))
     {
         flags |= STATUS_FLAGS2_START_SW;
     }
