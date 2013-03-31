@@ -3,6 +3,7 @@
 #include "calc.h"
 #include "injection.h"
 #include "ignition.h"
+#include "switch.h"
 #include "actuators.h"
 #include "comm.h"
 
@@ -10,11 +11,34 @@ extern ecu_t ecu;
 
 uint32_t execount;
 
+void TIM7_IRQHandler(void)
+{
+    if ((TIM7->SR & TIM_SR_UIF))
+    {
+        ecu.status.mtime++;
+    }
+}
+
 int main(void)
 {
     __disable_irq();
 
+    ecu.status.mtime = 0;
+
+    TIM7->PSC = 50;
+    TIM7->ARR = 1000;
+    TIM7->CNT = 0;
+    TIM7->DIER |= TIM_DIER_UIE;
+    TIM7->SR &= ~TIM_SR_UIF;
+    TIM7->CR1 |= (TIM_CR1_URS | TIM_CR1_CEN);
+
+    NVIC_SetPriority(TIM7_IRQn, 15);
+    NVIC_EnableIRQ(TIM7_IRQn);
+
+    switch_init();
     actuators_init();
+
+    ecu.config.fuel_pump_prime_time = 2000;
 
     __enable_irq();
 
@@ -23,7 +47,7 @@ int main(void)
 
     for (;;)
     {
-        /* Управление главным реле */
+        switch_update();
         main_relay();
 
         /* События на каждый новый такт двигателя */
@@ -41,10 +65,8 @@ int main(void)
         if (dtime1 >= 10)
         {
             mtime1 = ecu.status.mtime;
-
             fuel_pump(dtime1);
             accel_enrich(dtime1);
-            //idle(dtime1);
         }
 
         /* 
