@@ -29,6 +29,7 @@ typedef struct status_s
     uint16_t ase;
     uint16_t enrich;
     uint16_t afr;
+    int16_t trim;
     uint16_t injpw;
 } status_t;
 

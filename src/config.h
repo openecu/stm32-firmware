@@ -38,6 +38,12 @@ typedef struct config_s
     uint16_t inj_mult;
     // Лаг форсунки
     uint16_t inj_deadtime[16];
+    //
+    int16_t inj_afr[256];
+    //
+    int16_t inj_trim[256];
+    //
+    uint16_t inj_timing[256];
 
     // Наполнение в режиму пуска
     uint16_t crank_load[16];

@@ -102,9 +102,12 @@ void accel_enrich(uint32_t dtime)
     ecu.status.acce = acce;
 }
 
+/**
+ * Расчёт состава смеси.
+ */
 void inj_afr(void)
 {
-
+    ecu.status.afr = 14700;
 }
 
 /**
@@ -112,7 +115,7 @@ void inj_afr(void)
  */
 void inj_trim(void)
 {
-
+    ecu.status.trim = 0;
 }
 
 /**
@@ -120,28 +123,43 @@ void inj_trim(void)
  */
 void inj_calc_pw(void)
 {
-    uint16_t load, pw, deadtime;
+    uint32_t load, pw, enrich;
+    uint16_t deadtime, afr;
 
     deadtime = table1dfix_lookup(ecu.sensors.batv, 16, 0, 1024, 
         (int16_t*)ecu.config.inj_deadtime);
 
     // Если режим пуска, то время впрыска рассчитывается на основе теоритического 
     // наполнения с корректировкой по температуре ОЖ и количеству оборотов прокрутки.
-    if ((ecu.status.flags1 & STATUS_FLAGS1_CRANK))
+    if (
+        !(ecu.status.flags1 & STATUS_FLAGS1_RUN) 
+        || (ecu.status.flags1 & STATUS_FLAGS1_CRANK)
+    )
     {
         uint16_t cre;
 
         load = table1dfix_lookup(ecu.sensors.ect, 16, -40, 120,
             (int16_t*)ecu.config.crank_load);
         cre = 0;
-
-        pw = ((load * (1000 + cre)) * ecu.config.inj_mult / 1000) / ecu.config.crank_afr;
-        ecu.status.injpw = pw + deadtime;
-
-        return;
+        enrich = cre;
+        afr = ecu.config.crank_afr;
+    }
+    // В рабочем режиме
+    else
+    {
+        load = ecu.status.load;
+        enrich = ecu.status.ase + ecu.status.wue + ecu.status.acce;
+        afr = ecu.status.afr + ecu.status.trim;
     }
 
+    // Ограничиваем обогащение до 10 раз
+    if (enrich > 10000)
+    {
+        enrich = 10000;
+    }
 
+    pw = ((load * (1000 + enrich) / 1000) * ecu.config.inj_mult) / afr;
+    ecu.status.injpw = pw + deadtime;
 }
 
 void inj_timing(void)
