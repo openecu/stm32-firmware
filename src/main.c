@@ -26,6 +26,13 @@ int main(void)
     RCC->APB2ENR |= RCC_APB2ENR_USART1EN;
     RCC->AHB1ENR |= (RCC_AHB1ENR_GPIOBEN | RCC_AHB1ENR_GPIODEN | RCC_AHB1ENR_GPIOGEN | RCC_AHB1ENR_DMA2EN);
 
+    /* Independed watchdog */
+    IWDG->KR = 0x5555;
+    IWDG->PR = 0;
+    IWDG->RLR = 0xFF;
+    IWDG->KR = 0xAAAA;
+    IWDG->KR = 0xCCCC;
+
     /* Timer 7 */
     TIM7->PSC = 50;
     TIM7->ARR = 1000;
@@ -53,6 +60,8 @@ int main(void)
 
     for (;;)
     {
+        IWDG->KR = 0xAAAA;
+
         switch_update();
         main_relay();
 
