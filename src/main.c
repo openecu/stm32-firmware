@@ -100,31 +100,31 @@ int main(void)
         */
         calc_load();
 
-        if (execount == 1)
-        {
+        //if (execount == 1)
+        //{
             warmup_enrich();
             inj_afr();
             inj_trim();
             inj_timing();
             inj_calc_pw();
-        } 
-        else if (execount == 2)
-        {
+        //} 
+        //else if (execount == 2)
+        //{
             ign_dwell();
             ign_timing();
-        }
-        else if (execount == 3)
-        {
+        //}
+        //else if (execount == 3)
+        //{
             cooling_fan();
             vvt();
-        }
-        else if (execount == 4)
-        {
+        //}
+        //else if (execount == 4)
+        //{
             comm();
-            execount = 0;
-        }
+            //execount = 0;
+        //}
 
-        execount++;
+        //execount++;
     }
 
     return 0;
