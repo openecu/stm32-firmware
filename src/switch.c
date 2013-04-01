@@ -2,30 +2,26 @@
 #include "switch.h"
 #include "ecu.h"
 
-#define SWITCH_GPIO GPIOD
-
-#define SWITCH_IGN_ODR      GPIO_ODR_ODR_0
-#define SWITCH_START_ODR    GPIO_ODR_ODR_1
-
 extern ecu_t ecu;
 
 void switch_init(void)
 {
     SWITCH_GPIO->MODER &= ~0x0000FFFF;
-    //SWITCH_GPIO->OSPEEDR |= 0x00005555;
     SWITCH_GPIO->PUPDR |= 0x00005555;
 }
 
 void switch_update(void)
 {
-    //uint32_t swst = ;
-    uint32_t flags = 0;
+    uint32_t flags, sw;
 
-    if ((SWITCH_GPIO->IDR & SWITCH_IGN_ODR))
+    sw = SWITCH_GPIO->IDR;
+    flags = 0;
+
+    if ((sw & SWITCH_IGN_ODR))
     {
         flags |= STATUS_FLAGS2_IGN_SW;
     }
-    else if ((SWITCH_GPIO->IDR & SWITCH_START_ODR))
+    else if ((sw & SWITCH_START_ODR))
     {
         flags |= STATUS_FLAGS2_START_SW;
     }

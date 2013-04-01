@@ -3,6 +3,8 @@
 
 #include <stdint.h>
 
+#define INJ_FLAGS1_ACCEL_ENRICH_DELAY   0x00000001
+
 void warmup_enrich(void);
 
 void accel_enrich(uint32_t dtime);

@@ -45,7 +45,7 @@ typedef struct config_s
     //
     uint16_t inj_timing[256];
 
-    // Наполнение в режиму пуска
+    // Наполнение в режиме пуска
     uint16_t crank_load[16];
     // Базовый состав смеси в режиме пуска
     uint16_t crank_afr;

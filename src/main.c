@@ -58,11 +58,12 @@ int main(void)
     mtime1 = 0;
     execount = 0;
 
+    switch_update();
+
     for (;;)
     {
         IWDG->KR = 0xAAAA;
 
-        switch_update();
         main_relay();
 
         if ((ecu.status.flags2 & STATUS_FLAGS2_START_SW))
@@ -91,6 +92,7 @@ int main(void)
             mtime1 = mtime;
             fuel_pump(dtime1);
             accel_enrich(dtime1);
+            switch_update();
         }
 
         /* 

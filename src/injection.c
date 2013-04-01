@@ -2,8 +2,6 @@
 #include "ecu.h"
 #include "mathext.h"
 
-#define INJ_FLAGS1_ACCEL_ENRICH_DELAY   0x00000001
-
 extern ecu_t ecu;
 
 uint32_t flags1;
@@ -34,7 +32,8 @@ void accel_enrich(uint32_t dtime)
     // Если скорость открытия превысила порог, то активируем обогащение
     if (dtp >= ecu.config.accel_enrich_delta_thres)
     {
-        uint16_t _acce, acced, accer, accee;
+        uint32_t _acce;
+        uint16_t acced, accer, accee;
 
         acced = table1dfix_lookup(dtp, 16, 0, 256, 
             (int16_t*)ecu.config.accel_delta_enrich);
@@ -46,7 +45,19 @@ void accel_enrich(uint32_t dtime)
         // Суммарное обогащение вычисляется на основе обогащения в зависимости 
         // от скорости открытия заслонки и поправок от оборотов двигателя и
         // температуры ОЖ
-        _acce = (((acced * accer) / 1000) * accee) / 1000;
+        _acce = (acced * accer) / 1000;
+
+        if (_acce > 0xFFFF)
+        {
+            _acce = 0xFFFF;
+        }
+
+        _acce = (_acce * accee) / 1000;
+
+        if (_acce > 0xFFFF)
+        {
+            _acce = 0xFFFF;
+        }
 
         if (_acce > acce)
         {
@@ -119,7 +130,7 @@ void inj_trim(void)
 }
 
 /**
- * Рассчёт длительности впрыска.
+ * Расчёт длительности впрыска.
  */
 void inj_calc_pw(void)
 {
@@ -162,6 +173,9 @@ void inj_calc_pw(void)
     ecu.status.injpw = pw + deadtime;
 }
 
+/**
+ * Расчёт фазы впрыска.
+ */
 void inj_timing(void)
 {
 
