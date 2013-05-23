@@ -90,6 +90,7 @@ int main(void)
         if (dtime1 >= 10)
         {
             mtime1 = mtime;
+
             fuel_pump(dtime1);
             accel_enrich(dtime1);
             switch_update();
