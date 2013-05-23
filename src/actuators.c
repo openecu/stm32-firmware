@@ -24,14 +24,14 @@ void actuators_init(void)
 /**
  * Управление главным реле.
  */
-void main_relay(void)
+void main_relay()
 {
     // Если зажигание включено, то включаем главное реле 
     if ((ecu.status.flags2 & STATUS_FLAGS2_IGN_SW))
     {
         flags1 |= ACTS_FLAGS1_MAIN_RELAY;
     }
-    // Если зажигание выключено, то выключаем главное реле
+    // Если зажигание выключено, то выключаем главное реле после остановки двигателя?
     else
     {
         flags1 &= ~ACTS_FLAGS1_MAIN_RELAY;

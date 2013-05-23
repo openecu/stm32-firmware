@@ -98,36 +98,22 @@ int main(void)
 
         /* 
             События на каждую итерацию.
-            Часть событий распределена по итерациям для более точного выполнения
-            событий с заданным интервалом.
         */
         calc_load();
 
-        //if (execount == 1)
-        //{
-            warmup_enrich();
-            inj_afr();
-            inj_trim();
-            inj_timing();
-            inj_calc_pw();
-        //} 
-        //else if (execount == 2)
-        //{
-            ign_dwell();
-            ign_timing();
-        //}
-        //else if (execount == 3)
-        //{
-            cooling_fan();
-            vvt();
-        //}
-        //else if (execount == 4)
-        //{
-            comm();
-            //execount = 0;
-        //}
+        warmup_enrich();
+        inj_afr();
+        inj_trim();
+        inj_timing();
+        inj_calc_pw();
 
-        //execount++;
+        ign_dwell();
+        ign_timing();
+
+        cooling_fan();
+        vvt();
+
+        comm();
     }
 
     return 0;
