@@ -1,0 +1,14 @@
+TIM6:   1 basic
+TIM7:   1 basic
+TIM10:  1 synchronization
+TIM11:  1 synchronization
+TIM8:   4 events
+TIM2:   4 injectors
+TIM4:   4 injectors
+TIM3:   4 ignition coils
+TIM5:   4 ignition coils
+TIM1:   4 PWM
+TIM9:   2 PWM
+TIM12:  2 PWM
+TIM13:  1 PWM
+TIM14:  1 PWM
