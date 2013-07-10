@@ -1,9 +1,9 @@
 #ifndef STATUS_H
 #define STATUS_H
 
-#include "adc.h"
 #include "idle.h"
 #include "injection.h"
+#include "sensors.h"
 #include "sync.h"
 #include "comm.h"
 
@@ -12,9 +12,6 @@
 
 typedef struct status_s
 {
-    uint16_t __id;
-    uint16_t __size;
-
 	/* Sensors */
 	// RPM
 	uint16_t rpm;
@@ -37,7 +34,7 @@ typedef struct status_s
 
     /* Peripheral */
     // ADC
-    adc_state_t adc;
+    sens_state_t sens;
     // Sync
     sync_state_t sync;
     // Injection

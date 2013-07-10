@@ -15,9 +15,6 @@ uint8_t sync_ref;
 
 int main(void)
 {
-    status.__id = 0xFFAA;
-    status.__size = sizeof(status);
-
     RCC->AHB1ENR |= (RCC_AHB1ENR_GPIOAEN | RCC_AHB1ENR_GPIOBEN | RCC_AHB1ENR_GPIOCEN 
         | RCC_AHB1ENR_GPIODEN | RCC_AHB1ENR_GPIOEEN | RCC_AHB1ENR_DMA1EN);
     RCC->APB1ENR |= (RCC_APB1ENR_USART2EN | RCC_APB1ENR_TIM13EN | RCC_APB1ENR_TIM7EN | RCC_APB1ENR_TIM2EN);
@@ -86,7 +83,7 @@ void TIM7_IRQHandler(void)
     {
         TIM7->SR &= ~TIM_SR_UIF;
 
-        if ((++sync_div) == 10)
+        if ((++sync_div) == 50)
         {
             sync_div = 0;
 
