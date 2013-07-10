@@ -61,20 +61,9 @@ void sync_init(void)
 void calc_rpm(void)
 {
     uint32_t stroke_time;
-    uint16_t rpm;
 
     stroke_time = status.sync.stroke_time;
-
-    if (stroke_time > 0)
-    {
-        rpm = 30000000 / stroke_time;
-    }
-    else
-    {
-        rpm = 0;
-    }
-
-    status.rpm = rpm;
+    status.rpm = (stroke_time > 0) ? (30000000 / stroke_time) : 0;
 }
 
 /*
@@ -123,7 +112,7 @@ void update_event(sync_event_t *event, uint16_t target, uint8_t step)
 }
 
 /*
-    Reference ISR
+    Stroke ISR
 */
 void TIM1_UP_TIM10_IRQHandler(void)
 {
@@ -138,7 +127,6 @@ void TIM1_UP_TIM10_IRQHandler(void)
             if ((GPIOB->IDR & GPIO_IDR_IDR_8))
             {
                 TIM10->CNT = 0;
-                //TIM9->CNT = 0;
                 status.sync.cogs = 0;
 
                 /*if (status.sync.ref == 3)
@@ -248,7 +236,6 @@ void TIM1_BRK_TIM9_IRQHandler(void)
     {
         uint8_t i, k;
         uint16_t ccr;
-        uint16_t timing;
         sync_event_t *event;
 
         TIM9->SR = ~TIM_SR_CC2IF;

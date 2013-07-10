@@ -8,10 +8,10 @@
 
 typedef struct
 {
-	// Target injection timing
-	uint16_t timing;
 	// Injection events
 	sync_event_t events[INJ_COUNT];
+	// Target injection timing
+	uint16_t timing;
 	// Injection pulse width
 	uint16_t pw;
 
@@ -21,6 +21,6 @@ void inj_init(void);
 
 void inj_start(uint8_t no);
 
-void inj_stop(void);
+void inj_stop(uint8_t no);
 
 #endif
