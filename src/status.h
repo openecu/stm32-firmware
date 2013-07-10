@@ -1,35 +1,57 @@
-#ifndef _STATUS_H
-#define _STATUS_H
-    
-#include <stdint.h>
+#ifndef STATUS_H
+#define STATUS_H
 
-#define STATUS_FLAGS1_CRANK     0x00000001
-#define STATUS_FLAGS1_RUN       0x00000002
-#define STATUS_FLAGS1_STROKE    0x00000004
+#include "adc.h"
+#include "idle.h"
+#include "injection.h"
+#include "sync.h"
+#include "comm.h"
 
-#define STATUS_FLAGS2_FAN           0x00000001
-#define STATUS_FLAGS2_VVT           0x00000002
-#define STATUS_FLAGS2_FUEL_PUMP     0x00000004
-#define STATUS_FLAGS2_MAIN_RELAY    0x00000008
-#define STATUS_FLAGS2_IGN_SW        0x00010000
-#define STATUS_FLAGS2_START_SW      0x00020000
-
-#define STATUS_FLAGS3_ACCEL_ENRICH  0x00000001
+#define FLAGS1_RUN      0x00000001
+#define FLAGS1_STROKE   0x00000002
 
 typedef struct status_s
 {
+    uint16_t __id;
+    uint16_t __size;
+
+	/* Sensors */
+	// RPM
+	uint16_t rpm;
+	// Previous RPM
+	uint16_t prev_rpm;
+	// Delta RPM
+	int16_t delta_rpm;
+	// Throttle position
+	uint16_t tp;
+	// Previous throttle position
+	uint16_t prev_tp;
+	// Delta throttle position
+	int16_t delta_tp;
+	// Engine coolant temperature
+	int16_t ect;
+	// Battery voltage
+	uint16_t batv;
+    // Injection pulse width
+    uint16_t inj_pw;
+
+    /* Peripheral */
+    // ADC
+    adc_state_t adc;
+    // Sync
+    sync_state_t sync;
+    // Injection
+    inj_state_t inj;
+    // Idle
+    idle_state_t idle;
+    // Comm
+    comm_state_t comm;
+
+	/* Flags */
     uint32_t flags1;
-    uint32_t flags2;
-    uint32_t flags3;
-    uint32_t mtime;
-    uint16_t load;
-    uint16_t acce;
-    uint16_t wue;
-    uint16_t ase;
-    uint16_t enrich;
-    uint16_t afr;
-    int16_t trim;
-    uint16_t injpw;
+
 } status_t;
+
+extern status_t status;
 
 #endif

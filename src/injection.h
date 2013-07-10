@@ -1,20 +1,26 @@
-#ifndef _INJECTION_H
-#define _INJECTION_H
+#ifndef INJECTION_H
+#define INJECTION_H
 
-#include <stdint.h>
+#include "cmsis/stm32f4xx.h"
+#include "sync.h"
 
-#define INJ_FLAGS1_ACCEL_ENRICH_DELAY   0x00000001
+#define INJ_COUNT	4
 
-void warmup_enrich(void);
+typedef struct
+{
+	// Target injection timing
+	uint16_t timing;
+	// Injection events
+	sync_event_t events[INJ_COUNT];
+	// Injection pulse width
+	uint16_t pw;
 
-void accel_enrich(uint32_t dtime);
+} inj_state_t;
 
-void inj_afr(void);
+void inj_init(void);
 
-void inj_trim(void);
+void inj_start(uint8_t no);
 
-void inj_calc_pw(void);
-
-void inj_timing(void);
+void inj_stop(void);
 
 #endif

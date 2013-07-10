@@ -2,7 +2,7 @@ OPTIMIZATION = s
 
 #-------------------------------------------------------------------------------
 
-SRC_C  = main.c calc.c injection.c ignition.c switch.c actuators.c comm.c uart.c mathext.c
+SRC_C  = comm.c config.c main.c injection.c idle.c math_ext.c pid.c sync.c
 SRC_C += system_stm32f4xx.c
 
 SRC_ASM += startup_stm32f40xx.s
@@ -55,11 +55,11 @@ mcu_all: sperator target.elf mcu_prog
 	@echo '--------------------------------------------------------------------'
 	@$(CROSS)size target/target.elf
 	@$(CROSS)size target/target.elf > target/target.log
-	@$(CROSS)objcopy -O binary target/target.elf target/target.bin
-	@$(CROSS)objcopy -O ihex target/target.elf target/target.hex
+	@$(CROSS)objcopy -O binary target/target.elf target.bin
+	@$(CROSS)objcopy -O ihex target/target.elf target.hex
 	@$(CROSS)objdump -h -S -z target/target.elf > target/target.lss
 	@$(CROSS)nm -n target/target.elf > target/target.sym
-#	@rm -f target/*.o
+	@del /Q target
 
 $(SRC_C:%.c=target/%.o): target/%.o: %.c
 	@echo Compiling: $<
