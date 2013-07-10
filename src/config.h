@@ -56,8 +56,6 @@ typedef struct
 	uint16_t inj_timing_rpm[CONF_INJ_TIMING_RPM_SIZE];
 	// Injection timing load
 	uint16_t inj_timing_load[CONF_INJ_TIMING_LOAD_SIZE];
-    // Injection timing step per stroke
-    uint8_t inj_timing_step;
 	// Injection trim
 	uint16_t inj_trim[CONF_INJ_TRIM_RPM_SIZE * CONF_INJ_TRIM_LOAD_SIZE];
 	// Injection trim rpm

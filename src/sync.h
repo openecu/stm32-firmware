@@ -4,19 +4,18 @@
 #include "cmsis/stm32f4xx.h"
 
 #define SYNC_FLAGS1_SYNCED  0
+#define SYNC_FLAGS1_EVENT1  1
 
-typedef struct sync_event_s
+typedef struct
 {
     // Timing
     uint16_t timing;
-    // Timing stroke
+    // Stroke
     uint8_t stroke;
-    // Timing cogs
+    // Previous stroke
+    uint8_t prev_stroke;
+    // Cogs
     uint8_t cogs;
-    // Stroke offset
-    uint8_t offset;
-    // Next event in sequence
-    struct sync_event_s *next;
 
 } sync_event_t;
 
@@ -40,7 +39,5 @@ typedef struct
 void sync_init(void);
 
 void calc_rpm(void);
-
-void update_event(sync_event_t *event, uint16_t target, uint8_t step);
 
 #endif

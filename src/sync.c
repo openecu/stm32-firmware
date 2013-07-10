@@ -80,11 +80,12 @@ void calc_rpm(void)
 /*
     Update event
 */
-void update_event(sync_event_t *event, uint16_t target, uint8_t step)
+void update_event(sync_event_t *event, uint8_t offset/*, uint8_t stroke*/, 
+    uint16_t target, uint16_t *current, uint8_t step)
 {
     uint16_t tmp;
 
-    tmp = event->timing;
+    tmp = (*current);
 
     if (target > tmp)
     {
@@ -112,14 +113,16 @@ void update_event(sync_event_t *event, uint16_t target, uint8_t step)
         }
     }
 
-    event->timing   = tmp;
+    (*current)      = tmp;
     event->cogs     = (tmp % 180) / 6;
-    event->stroke   = (tmp / 180) + event->offset;
+    event->stroke   = (tmp / 180) + offset;
 
     if (event->stroke > 3)
     {
         event->stroke -= 4;
     }
+
+    //event->prev_stroke = stroke;
 }
 
 /*
@@ -246,7 +249,7 @@ void TIM1_BRK_TIM9_IRQHandler(void)
 {
     if ((TIM9->SR & TIM_SR_CC2IF))
     {
-        uint8_t i, k;
+        uint8_t i;
         uint16_t ccr;
         uint16_t timing;
         sync_event_t *event;
@@ -256,20 +259,42 @@ void TIM1_BRK_TIM9_IRQHandler(void)
         ccr = TIM9->CCR2;
         TIM9->CCR2 = (ccr >= 174) ? 0 : ccr + 6;
 
+        if ((status.sync.stroke == 0) && (status.sync.cogs == 0))
+        {
+            uart_putc(0xFF);
+        }
+
         // Injection
         for (i = 0; i < INJ_COUNT; i++)
         {
             event = &status.inj.events[i];
 
             if (
-                (event->cogs == status.sync.cogs)
-                && (event->stroke == status.sync.stroke)
+                (event->stroke == status.sync.stroke) 
+                && (event->cogs == status.sync.cogs)
             )
             {
-                inj_start(i);
-                update_event(event->next, status.inj.timing, config.inj_timing_step);
+                if (event->prev_stroke > 2)
+                {
+                    uart_putc(i);
+
+                    inj_start(i);
+                    update_event(event, i/*, status.sync.stroke*/,
+                        status.inj.timing, &event->timing, 6);
+                    event->prev_stroke = 0;
+                }
             }
+
+            event->prev_stroke++;
         }
+
+        /*if (status.sync.cogs == status.inj.timing_event.cogs)
+        {
+            if (TESTBIT(status.sync.flags1, SYNC_FLAGS1_EVENT1))
+            {
+                CLEARBIT(status.sync.flags1, SYNC_FLAGS1_EVENT1);
+            }
+        }*/
 
         // Strobe
         if (status.sync.stroke == 0)
@@ -293,6 +318,8 @@ void TIM1_BRK_TIM9_IRQHandler(void)
             {
                 status.sync.stroke = 0;
             }
+
+            SETBIT(status.sync.flags1, SYNC_FLAGS1_EVENT1);
         }
     }
 

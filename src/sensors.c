@@ -1,8 +1,17 @@
-#include "sensors.h"
+#include "adc.h"
 #include "status.h"
-#include "config.h"
 
-void sens_init(void)
+void adc_init(void)
+{
+
+}
+
+void adc_first_measure(void)
+{
+    
+}
+
+void adc_conv_sequence(void)
 {
 
 }

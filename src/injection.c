@@ -10,15 +10,13 @@ void inj_init(void)
     status.inj.pw = 20000;
     status.inj.timing = 0;
 
-    // Initialize events
     for (i = 0; i < INJ_COUNT; i++)
     {
         event = &status.inj.events[i];
-        event->timing   = 0;
-        event->cogs     = 0;
-        event->stroke   = i;
-        event->offset   = i;
-        event->next = &status.inj.events[(i < (INJ_COUNT - 1)) ? (i + 1) : 0];
+        event->timing        = 0;
+        event->cogs          = 0;
+        event->stroke        = i;
+        event->prev_stroke   = i;
     }
 
     TIM2->PSC = 49;
