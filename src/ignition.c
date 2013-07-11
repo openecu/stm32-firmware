@@ -8,8 +8,8 @@ void ign_init(void)
     uint8_t i, k;
     sync_event_t *event;
 
-    status.ign.dwell_timing = 270;
-    status.ign.spark_timing = 360;
+    status.ign.dwell_timing = 331;
+    status.ign.spark_timing = 363;
 
     // Initialize dwell events
     for (i = 0; i < INJ_COUNT; i++)

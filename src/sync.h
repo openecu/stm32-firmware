@@ -34,6 +34,10 @@ typedef struct sync_state_s
     uint32_t prev_stroke_time;
     // Cogs
     uint8_t cogs;
+    // Time between cogs
+    uint16_t cogs_per;
+    // Previous cogs time
+    uint16_t prev_cogs_time;
     // Flags 1
     uint32_t flags1;
 

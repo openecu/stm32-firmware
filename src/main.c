@@ -84,7 +84,7 @@ void TIM7_IRQHandler(void)
     {
         TIM7->SR &= ~TIM_SR_UIF;
 
-        if ((++sync_div) == 50)
+        if ((++sync_div) == 5)
         {
             sync_div = 0;
 

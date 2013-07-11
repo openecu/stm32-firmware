@@ -277,6 +277,9 @@ void TIM1_BRK_TIM9_IRQHandler(void)
             ccr = TIM9->CCR2;
             TIM9->CCR2 = (ccr >= 174) ? 0 : ccr + 6;
 
+            status.sync.cogs_per = TIM10->CNT - status.sync.prev_cogs_time;
+            status.sync.prev_cogs_time = TIM10->CNT;
+
             // Injection
             event = status.inj.event;
 
@@ -285,7 +288,6 @@ void TIM1_BRK_TIM9_IRQHandler(void)
                 && (event->stroke == status.sync.stroke)
             )
             {
-                uart_putc(event->offset);
                 inj_start(event->offset);
                 status.inj.event = event->next;
 
@@ -303,7 +305,10 @@ void TIM1_BRK_TIM9_IRQHandler(void)
                 && (event->stroke == status.sync.stroke)
             )
             {
-                GPIOD->ODR |= GPIO_ODR_ODR_13;
+                TIM1->CCR1 = TIM1->CNT + (((uint32_t)event->ang_mod * status.sync.cogs_per) / 6);
+                TIM1->SR = ~TIM_SR_CC1IF;
+                TIM1->DIER |= TIM_DIER_CC1IE;
+
                 status.ign.dwell_event = event->next;
 
                 if (event->timing != status.ign.dwell_timing)
@@ -320,7 +325,10 @@ void TIM1_BRK_TIM9_IRQHandler(void)
                 && (event->stroke == status.sync.stroke)
             )
             {
-                GPIOD->ODR &= ~GPIO_ODR_ODR_13;
+                TIM1->CCR2 = TIM1->CNT + (((uint32_t)event->ang_mod * status.sync.cogs_per) / 6);
+                TIM1->SR = ~TIM_SR_CC2IF;
+                TIM1->DIER |= TIM_DIER_CC2IE;
+
                 status.ign.spark_event = event->next;
 
                 if (event->timing != status.ign.spark_timing)
@@ -368,14 +376,18 @@ void TIM1_BRK_TIM9_IRQHandler(void)
 */
 void TIM1_CC_IRQHandler(void)
 {
-    if ((TIM1->SR & TIM_SR_CC1IF))
+    if ((TIM1->DIER & TIM_DIER_CC1IE) && (TIM1->SR & TIM_SR_CC1IF))
     {
         TIM1->SR = ~TIM_SR_CC1IF;
+        TIM1->DIER &= ~TIM_DIER_CC1IE;
+        GPIOD->ODR |= GPIO_ODR_ODR_13;
     }
 
-    if ((TIM1->SR & TIM_SR_CC2IF))
+    if ((TIM1->DIER & TIM_DIER_CC2IE) && (TIM1->SR & TIM_SR_CC2IF))
     {
         TIM1->SR = ~TIM_SR_CC2IF;
+        TIM1->DIER &= ~TIM_DIER_CC2IE;
+        GPIOD->ODR &= ~GPIO_ODR_ODR_13;
     }
 
     if ((TIM1->SR & TIM_SR_CC3IF))
