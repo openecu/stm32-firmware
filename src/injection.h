@@ -10,6 +10,8 @@ typedef struct
 {
 	// Injection events
 	sync_event_t events[INJ_COUNT];
+	// Current event
+	sync_event_t *event;
 	// Target injection timing
 	uint16_t timing;
 	// Injection pulse width

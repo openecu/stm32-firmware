@@ -187,26 +187,25 @@ void TIM1_UP_TIM10_IRQHandler(void)
                 if ((pos >= 15) && (pos <= 17))
                 {
                     status.sync.stroke = 0;
-                    SETBIT(status.sync.flags1, SYNC_FLAGS1_SYNCED);
                 }
                 // Cyl. 2
                 else if ((pos >= 11) && (pos <= 13))
                 {
                     status.sync.stroke = 1;
-                    SETBIT(status.sync.flags1, SYNC_FLAGS1_SYNCED);
                 }
                 // Cyl. 3
                 else if ((pos >= 7) && (pos <= 9))
                 {
                     status.sync.stroke = 2;
-                    SETBIT(status.sync.flags1, SYNC_FLAGS1_SYNCED);
                 }
                 // Cyl. 4
                 else if ((pos >= 3) && (pos <= 5))
                 {
                     status.sync.stroke = 3;
-                    SETBIT(status.sync.flags1, SYNC_FLAGS1_SYNCED);
                 }
+                    
+                SETBIT(status.sync.flags1, SYNC_FLAGS1_SYNCED);
+                status.inj.event = &status.inj.events[status.sync.stroke];
             }
         }
     }
@@ -233,53 +232,57 @@ void TIM1_BRK_TIM9_IRQHandler(void)
     {
         uint8_t i, k;
         uint16_t ccr;
-        sync_event_t *event;
 
         TIM9->SR = ~TIM_SR_CC2IF;
 
-        ccr = TIM9->CCR2;
-        TIM9->CCR2 = (ccr >= 174) ? 0 : ccr + 6;
-
-        // Injection
-        for (i = 0; i < INJ_COUNT; i++)
+        // Do events only if synced
+        if (TESTBIT(status.sync.flags1, SYNC_FLAGS1_SYNCED))
         {
-            event = &status.inj.events[i];
+            ccr = TIM9->CCR2;
+            TIM9->CCR2 = (ccr >= 174) ? 0 : ccr + 6;
 
+            // Injection
             if (
-                (event->cogs == status.sync.cogs)
-                && (event->stroke == status.sync.stroke)
+                (status.inj.event->cogs == status.sync.cogs)
+                && (status.inj.event->stroke == status.sync.stroke)
             )
             {
                 inj_start(event->offset);
+                status.inj.event = status.inj.event->next;
 
-                if (EVENT_NEED_TO_UPDATE(event->next, status.inj.timing))
+                if (EVENT_NEED_TO_UPDATE(status.inj.event, status.inj.timing))
                 {
-                    event_update(event->next, status.inj.timing, config.inj_timing_step);
+                    event_update(status.inj.event, status.inj.timing, config.inj_timing_step);
                 }
             }
-        }
 
-        // Strobe
-        if (status.sync.stroke == 0)
-        {
-            if (status.sync.cogs == 0)
+            // Dwell
+
+
+            // Ignition
+
+            // Strobe
+            if (status.sync.stroke == 0)
             {
-                GPIOD->ODR |= GPIO_ODR_ODR_12;
+                if (status.sync.cogs == 0)
+                {
+                    GPIOD->ODR |= GPIO_ODR_ODR_12;
+                }
+                else if (status.sync.cogs == 15)
+                {
+                    GPIOD->ODR &= ~GPIO_ODR_ODR_12;
+                }
             }
-            else if (status.sync.cogs == 15)
-            {
-                GPIOD->ODR &= ~GPIO_ODR_ODR_12;
-            }
-        }
 
-        // Increment cogs
-        if ((++status.sync.cogs) == 30)
-        {
-            status.sync.cogs = 0;
-
-            if ((++status.sync.stroke) == 4)
+            // Increment cogs
+            if ((++status.sync.cogs) == 30)
             {
-                status.sync.stroke = 0;
+                status.sync.cogs = 0;
+
+                if ((++status.sync.stroke) == 4)
+                {
+                    status.sync.stroke = 0;
+                }
             }
         }
     }
