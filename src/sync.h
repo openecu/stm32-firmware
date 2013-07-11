@@ -4,8 +4,10 @@
 #include "cmsis/stm32f4xx.h"
 
 #define EVENT_NEED_TO_UPDATE(event, timing) (timing != event.timing)
+#define EVENT_NEXT(event)   (event = event->next)
 
 #define SYNC_FLAGS1_SYNCED  0
+
 
 typedef struct sync_event_s
 {
@@ -22,7 +24,7 @@ typedef struct sync_event_s
 
 } sync_event_t;
 
-typedef struct
+typedef struct sync_state_s
 {
     // Stroke counter
     uint8_t stroke;

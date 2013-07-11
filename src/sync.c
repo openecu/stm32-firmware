@@ -108,9 +108,11 @@ void event_update(sync_event_t *event, uint16_t target, uint8_t step)
     }
 }
 
-/*
-    Stroke ISR
-*/
+/**
+ * Stroke ISR
+ *
+ * @todo Add error process
+ */
 void TIM1_UP_TIM10_IRQHandler(void)
 {
     if ((TIM10->SR & TIM_SR_CC1IF))
@@ -203,9 +205,9 @@ void TIM1_UP_TIM10_IRQHandler(void)
                 {
                     status.sync.stroke = 3;
                 }
-                    
-                SETBIT(status.sync.flags1, SYNC_FLAGS1_SYNCED);
+
                 status.inj.event = &status.inj.events[status.sync.stroke];
+                SETBIT(status.sync.flags1, SYNC_FLAGS1_SYNCED);
             }
         }
     }
@@ -232,6 +234,7 @@ void TIM1_BRK_TIM9_IRQHandler(void)
     {
         uint8_t i, k;
         uint16_t ccr;
+        sync_event_t *event;
 
         TIM9->SR = ~TIM_SR_CC2IF;
 
@@ -242,24 +245,44 @@ void TIM1_BRK_TIM9_IRQHandler(void)
             TIM9->CCR2 = (ccr >= 174) ? 0 : ccr + 6;
 
             // Injection
+            event = &status.inj.event;
+
             if (
-                (status.inj.event->cogs == status.sync.cogs)
-                && (status.inj.event->stroke == status.sync.stroke)
+                (event->cogs == status.sync.cogs)
+                && (event->stroke == status.sync.stroke)
             )
             {
                 inj_start(event->offset);
-                status.inj.event = status.inj.event->next;
+                EVENT_NEXT(event);
 
-                if (EVENT_NEED_TO_UPDATE(status.inj.event, status.inj.timing))
+                if (EVENT_NEED_TO_UPDATE(event, status.inj.timing))
                 {
-                    event_update(status.inj.event, status.inj.timing, config.inj_timing_step);
+                    event_update(event, status.inj.timing, config.inj_timing_step);
                 }
             }
 
             // Dwell
+            event = &status.ign.dwell_event;
+            
+            if (
+                (event->cogs == status.sync.cogs)
+                && (event->stroke == status.sync.stroke)
+            )
+            {
+                //TIM1->CCR1 = TIM1->CNT + ;
+                //TIM1->SR = ~TIM_SR_CC1IF;
+                EVENT_NEXT(event);
 
+                if (EVENT_NEED_TO_UPDATE(event, status.inj.timing))
+                {
+                    event_update(event, status.inj.timing, config.inj_timing_step);
+                }
+            }
 
             // Ignition
+            event = &status.ign.spark_event;
+
+            // Knock
 
             // Strobe
             if (status.sync.stroke == 0)
