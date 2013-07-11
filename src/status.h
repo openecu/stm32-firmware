@@ -2,6 +2,7 @@
 #define STATUS_H
 
 #include "idle.h"
+#include "ignition.h"
 #include "injection.h"
 #include "sensors.h"
 #include "sync.h"
@@ -39,6 +40,8 @@ typedef struct status_s
     sync_state_t sync;
     // Injection
     inj_state_t inj;
+    // Ignition
+    ign_state_t ign;
     // Idle
     idle_state_t idle;
     // Comm

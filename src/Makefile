@@ -2,7 +2,7 @@ OPTIMIZATION = s
 
 #-------------------------------------------------------------------------------
 
-SRC_C  = comm.c config.c main.c injection.c idle.c math_ext.c pid.c sensors.c sync.c
+SRC_C  = comm.c config.c main.c ignition.c injection.c idle.c math_ext.c pid.c sensors.c sync.c
 SRC_C += system_stm32f4xx.c
 
 SRC_ASM += startup_stm32f40xx.s

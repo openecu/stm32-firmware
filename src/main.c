@@ -47,6 +47,7 @@ int main(void)
     /* Init I/O */
     sync_init();
     inj_init();
+    ign_init();
     idle_init();
     comm_init();
 
@@ -83,7 +84,7 @@ void TIM7_IRQHandler(void)
     {
         TIM7->SR &= ~TIM_SR_UIF;
 
-        if ((++sync_div) == 10)
+        if ((++sync_div) == 50)
         {
             sync_div = 0;
 

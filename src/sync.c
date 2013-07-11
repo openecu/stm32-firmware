@@ -99,8 +99,9 @@ void event_update(sync_event_t *event, uint16_t target, uint16_t step)
     r = current % 180;
 
     event->timing   = current;
-    event->stroke   = (q + event->offset);
+    event->stroke   = q + event->offset;
     event->cogs     = r / 6;
+    event->ang_mod  = r % 6;
 
     if (event->stroke >= 4)
     {
@@ -217,6 +218,23 @@ void TIM1_UP_TIM10_IRQHandler(void)
                     }
                 }
 
+                for (i = 0; i < IGN_COUNT; i++)
+                {
+                    event = &status.ign.dwell_events[i];
+
+                    if (event->stroke == status.sync.stroke)
+                    {
+                        status.ign.dwell_event = event->next;
+                    }
+
+                    event = &status.ign.spark_events[i];
+
+                    if (event->stroke == status.sync.stroke)
+                    {
+                        status.ign.spark_event = event->next;
+                    }
+                }
+
                 SETBIT(status.sync.flags1, SYNC_FLAGS1_SYNCED);
             }
         }
@@ -278,25 +296,38 @@ void TIM1_BRK_TIM9_IRQHandler(void)
             }
 
             // Dwell
-            /*event = status.ign.dwell_event;
+            event = status.ign.dwell_event;
             
             if (
                 (event->cogs == status.sync.cogs)
                 && (event->stroke == status.sync.stroke)
             )
             {
-                //TIM1->CCR1 = TIM1->CNT + ;
-                //TIM1->SR = ~TIM_SR_CC1IF;
-                EVENT_NEXT(event);
+                GPIOD->ODR |= GPIO_ODR_ODR_13;
+                status.ign.dwell_event = event->next;
 
-                if (EVENT_NEED_TO_UPDATE(event, status.inj.timing))
+                if (event->timing != status.ign.dwell_timing)
                 {
-                    event_update(event, status.inj.timing, config.inj_timing_step);
+                    event_update(event, status.ign.dwell_timing, 6);
                 }
-            }*/
+            }
 
-            // Ignition
-            //event = &status.ign.spark_event;
+            // Spark
+            event = status.ign.spark_event;
+            
+            if (
+                (event->cogs == status.sync.cogs)
+                && (event->stroke == status.sync.stroke)
+            )
+            {
+                GPIOD->ODR &= ~GPIO_ODR_ODR_13;
+                status.ign.spark_event = event->next;
+
+                if (event->timing != status.ign.spark_timing)
+                {
+                    event_update(event, status.ign.spark_timing, 6);
+                }
+            }
 
             // Knock
 

@@ -13,6 +13,8 @@ typedef struct sync_event_s
     uint8_t stroke;
     // Timing cogs
     uint8_t cogs;
+    // Angle between cogs
+    uint8_t ang_mod;
     // Stroke offset
     uint8_t offset;
     // Next event in sequence
