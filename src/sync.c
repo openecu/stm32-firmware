@@ -69,43 +69,40 @@ void calc_rpm(void)
 /*
     Update event
 */
-void update_event(sync_event_t *event, uint16_t target, uint8_t step)
+void event_update(sync_event_t *event, uint16_t target, uint8_t step)
 {
-    uint16_t tmp;
+    int16_t current;
+    uint8_t q, r;
 
-    tmp = event->timing;
+    current = event->timing;
 
-    if (target > tmp)
+    if (target > current)
     {
-        tmp += step;
+        current += step;
 
-        if (tmp > target)
+        if (current > target)
         {
-            tmp = target;
+            current = target;
         }
     }
-    else if (target < tmp)
+    else if (target < current)
     {
-        if (tmp < step)
-        {
-            tmp = target;
-        }
-        else
-        {
-            tmp -= step;
+        current -= step;
 
-            if (tmp < target)
-            {
-                tmp = target;
-            }
+        if (current < target)
+        {
+            current = target;
         }
     }
 
-    event->timing   = tmp;
-    event->cogs     = (tmp % 180) / 6;
-    event->stroke   = (tmp / 180) + event->offset;
+    q = current / 180;
+    r = current % 180;
 
-    if (event->stroke > 3)
+    event->timing   = current;
+    event->stroke   = (q + event->offset);
+    event->cogs     = r / 6;
+
+    if (event->stroke >= 4)
     {
         event->stroke -= 4;
     }
@@ -253,8 +250,12 @@ void TIM1_BRK_TIM9_IRQHandler(void)
                 && (event->stroke == status.sync.stroke)
             )
             {
-                inj_start(i);
-                update_event(event->next, status.inj.timing, config.inj_timing_step);
+                inj_start(event->offset);
+
+                if (EVENT_NEED_TO_UPDATE(event->next, status.inj.timing))
+                {
+                    event_update(event->next, status.inj.timing, config.inj_timing_step);
+                }
             }
         }
 
