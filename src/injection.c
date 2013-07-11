@@ -1,6 +1,7 @@
 #include "cmsis/stm32f4xx.h"
 #include "injection.h"
 #include "status.h"
+#include "config.h"
 
 /* 
     Initialize injection 
@@ -11,7 +12,7 @@ void inj_init(void)
     sync_event_t *event;
 
     status.inj.pw = 20000;
-    status.inj.timing = 0;
+    status.inj.timing = 360;
 
     // Initialize injection start events
     for (i = 0; i < INJ_COUNT; i++)
@@ -23,6 +24,7 @@ void inj_init(void)
         event->offset   = i;
         k = (i < (INJ_COUNT - 1)) ? (i + 1) : 0;
         event->next = &status.inj.events[k];
+        event_update(event, status.inj.timing, 720);
     }
 
     // Initialize injection stop events timer

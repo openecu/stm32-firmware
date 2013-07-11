@@ -69,7 +69,7 @@ void calc_rpm(void)
 /*
     Update event
 */
-void event_update(sync_event_t *event, uint16_t target, uint8_t step)
+void event_update(sync_event_t *event, uint16_t target, uint16_t step)
 {
     int16_t current;
     uint8_t q, r;
@@ -180,7 +180,8 @@ void TIM1_UP_TIM10_IRQHandler(void)
             // Falling edge
             else
             {
-                uint8_t pos;
+                uint8_t pos, i;
+                sync_event_t *event;
 
                 TIM10->CCER &= ~TIM_CCER_CC1P;
                 pos = TIM9->CNT;
@@ -206,7 +207,16 @@ void TIM1_UP_TIM10_IRQHandler(void)
                     status.sync.stroke = 3;
                 }
 
-                status.inj.event = &status.inj.events[status.sync.stroke];
+                for (i = 0; i < INJ_COUNT; i++)
+                {
+                    event = &status.inj.events[i];
+
+                    if (event->stroke == status.sync.stroke)
+                    {
+                        status.inj.event = event->next;
+                    }
+                }
+
                 SETBIT(status.sync.flags1, SYNC_FLAGS1_SYNCED);
             }
         }
@@ -238,6 +248,11 @@ void TIM1_BRK_TIM9_IRQHandler(void)
 
         TIM9->SR = ~TIM_SR_CC2IF;
 
+        if ((status.sync.cogs == 0) && (status.sync.stroke == 0))
+        {
+            uart_putc(0xFF);
+        }
+
         // Do events only if synced
         if (TESTBIT(status.sync.flags1, SYNC_FLAGS1_SYNCED))
         {
@@ -245,24 +260,25 @@ void TIM1_BRK_TIM9_IRQHandler(void)
             TIM9->CCR2 = (ccr >= 174) ? 0 : ccr + 6;
 
             // Injection
-            event = &status.inj.event;
+            event = status.inj.event;
 
             if (
                 (event->cogs == status.sync.cogs)
                 && (event->stroke == status.sync.stroke)
             )
             {
+                uart_putc(event->offset);
                 inj_start(event->offset);
-                EVENT_NEXT(event);
+                status.inj.event = event->next;
 
-                if (EVENT_NEED_TO_UPDATE(event, status.inj.timing))
+                if (event->timing != status.inj.timing)
                 {
                     event_update(event, status.inj.timing, config.inj_timing_step);
                 }
             }
 
             // Dwell
-            event = &status.ign.dwell_event;
+            /*event = status.ign.dwell_event;
             
             if (
                 (event->cogs == status.sync.cogs)
@@ -277,10 +293,10 @@ void TIM1_BRK_TIM9_IRQHandler(void)
                 {
                     event_update(event, status.inj.timing, config.inj_timing_step);
                 }
-            }
+            }*/
 
             // Ignition
-            event = &status.ign.spark_event;
+            //event = &status.ign.spark_event;
 
             // Knock
 

@@ -55,11 +55,11 @@ mcu_all: sperator target.elf mcu_prog
 	@echo '--------------------------------------------------------------------'
 	@$(CROSS)size target/target.elf
 	@$(CROSS)size target/target.elf > target/target.log
-	@$(CROSS)objcopy -O binary target/target.elf target.bin
-	@$(CROSS)objcopy -O ihex target/target.elf target.hex
+	@$(CROSS)objcopy -O binary target/target.elf target/target.bin
+	@$(CROSS)objcopy -O ihex target/target.elf target/target.hex
 	@$(CROSS)objdump -h -S -z target/target.elf > target/target.lss
 	@$(CROSS)nm -n target/target.elf > target/target.sym
-	@del /Q target
+	@del /Q "target\*.o"
 
 $(SRC_C:%.c=target/%.o): target/%.o: %.c
 	@echo Compiling: $<
@@ -72,7 +72,7 @@ $(SRC_ASM:%.s=target/%.o): target/%.o: %.s
 clean:
 	@echo '--------------------------------------------------------------------'
 	@echo > target/dummy.txt
-#	@rm -f target/*.*
+	@del /Q "target\*.o"
 
 sperator:
 	@echo '--------------------------------------------------------------------'

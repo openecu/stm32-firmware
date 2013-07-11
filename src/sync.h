@@ -3,11 +3,7 @@
 
 #include "cmsis/stm32f4xx.h"
 
-#define EVENT_NEED_TO_UPDATE(event, timing) (timing != event.timing)
-#define EVENT_NEXT(event)   (event = event->next)
-
 #define SYNC_FLAGS1_SYNCED  0
-
 
 typedef struct sync_event_s
 {
@@ -45,6 +41,6 @@ void sync_init(void);
 
 void calc_rpm(void);
 
-void event_update(sync_event_t *event, uint16_t target, uint8_t step);
+void event_update(sync_event_t *event, uint16_t target, uint16_t step);
 
 #endif

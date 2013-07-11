@@ -25,7 +25,7 @@ void comm_init(void)
     GPIOA->PUPDR &= ~GPIO_PUPDR_PUPDR3;
     GPIOA->AFR[0] |= (0x07 << 12); // USART2_RX
 
-    USART2->BRR = 0x00D9; // 50.0 MHz / 0x01B2 = 115200
+    USART2->BRR = 0x00D9; // 50.0 MHz / 0x00D9 = 115200
     //USART2->CR3 |= USART_CR3_DMAT;
     USART2->CR1 |= (USART_CR1_RXNEIE | USART_CR1_TE | USART_CR1_RE);
     USART2->CR1 |= USART_CR1_UE;
@@ -90,7 +90,7 @@ void USART2_IRQHandler(void)
     {
         uint8_t data, tmphead;
 
-        USART2->SR &= ~USART_SR_RXNE;
+        USART2->SR = ~USART_SR_RXNE;
 
         data = USART2->DR;
         tmphead = (rx_head + 1) & UART_RX_BUF_MASK;
@@ -110,7 +110,7 @@ void USART2_IRQHandler(void)
     {
         uint16_t tmptail;
 
-        USART2->SR &= ~USART_SR_TXE;
+        USART2->SR = ~USART_SR_TXE;
 
         if (tx_tail != tx_head)
         {
