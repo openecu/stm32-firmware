@@ -45,14 +45,14 @@ void inj_start(uint8_t no)
         TIM2->CCR1 = TIM2->CNT + status.inj.pw;
         TIM2->SR = ~TIM_SR_CC1IF;
         TIM2->DIER |= TIM_DIER_CC1IE;
-        GPIOD->ODR |= GPIO_ODR_ODR_14;
+        GPIOD->ODR |= GPIO_ODR_ODR_13;
     }
     else
     {
         TIM2->CCR2 = TIM2->CNT + status.inj.pw;
         TIM2->SR = ~TIM_SR_CC1IF;
         TIM2->DIER |= TIM_DIER_CC2IE;
-        GPIOD->ODR |= GPIO_ODR_ODR_15;
+        GPIOD->ODR |= GPIO_ODR_ODR_14;
     }
 }
 
@@ -64,12 +64,12 @@ void inj_stop(uint8_t no)
     if ((no == 0) || (no == 2))
     {
         TIM2->DIER &= ~TIM_DIER_CC1IE;
-        GPIOD->ODR &= ~GPIO_ODR_ODR_14;
+        GPIOD->ODR &= ~GPIO_ODR_ODR_13;
     }
     else
     {
         TIM2->DIER &= ~TIM_DIER_CC2IE;
-        GPIOD->ODR &= ~GPIO_ODR_ODR_15;
+        GPIOD->ODR &= ~GPIO_ODR_ODR_14;
     }
 }
 
@@ -78,13 +78,13 @@ void inj_stop(uint8_t no)
 */
 void TIM2_IRQHandler(void)
 {
-    if ((TIM2->SR & TIM_SR_CC1IF))
+    if ((TIM2->DIER & TIM_DIER_CC1IE) && (TIM2->SR & TIM_SR_CC1IF))
     {
         TIM2->SR = ~TIM_SR_CC1IF;
         inj_stop(0);
     }
 
-    if ((TIM2->SR & TIM_SR_CC2IF))
+    if ((TIM2->DIER & TIM_DIER_CC2IE) && (TIM2->SR & TIM_SR_CC2IF))
     {
         TIM2->SR = ~TIM_SR_CC2IF;
         inj_stop(1);

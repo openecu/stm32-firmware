@@ -35,7 +35,7 @@ typedef struct sync_state_s
     // Cogs
     uint8_t cogs;
     // Time between cogs
-    uint16_t cogs_per;
+    uint16_t cogs_period;
     // Previous cogs time
     uint16_t prev_cogs_time;
     // Flags 1

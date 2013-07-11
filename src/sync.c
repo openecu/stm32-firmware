@@ -266,19 +266,54 @@ void TIM1_BRK_TIM9_IRQHandler(void)
 
         TIM9->SR = ~TIM_SR_CC2IF;
 
-        if ((status.sync.cogs == 0) && (status.sync.stroke == 0))
-        {
-            uart_putc(0xFF);
-        }
-
         // Do events only if synced
         if (TESTBIT(status.sync.flags1, SYNC_FLAGS1_SYNCED))
         {
             ccr = TIM9->CCR2;
             TIM9->CCR2 = (ccr >= 174) ? 0 : ccr + 6;
 
-            status.sync.cogs_per = TIM10->CNT - status.sync.prev_cogs_time;
-            status.sync.prev_cogs_time = TIM10->CNT;
+            status.sync.cogs_period     = TIM10->CNT - status.sync.prev_cogs_time;
+            status.sync.prev_cogs_time  = TIM10->CNT;
+
+            // Spark
+            event = status.ign.spark_event;
+            
+            if (
+                (event->cogs == status.sync.cogs)
+                && (event->stroke == status.sync.stroke)
+            )
+            {
+                TIM1->CCR2 = TIM1->CNT + (((uint32_t)event->ang_mod * status.sync.cogs_period) / 6);
+                TIM1->SR = ~TIM_SR_CC2IF;
+                TIM1->DIER |= TIM_DIER_CC2IE;
+
+                status.ign.spark_event = event->next;
+
+                if (event->timing != status.ign.spark_timing)
+                {
+                    event_update(event, status.ign.spark_timing, 6);
+                }
+            }
+
+            // Dwell
+            event = status.ign.dwell_event;
+
+            if (
+                (event->cogs == status.sync.cogs)
+                && (event->stroke == status.sync.stroke)
+            )
+            {
+                TIM1->CCR1 = TIM1->CNT + (((uint32_t)event->ang_mod * status.sync.cogs_period) / 6);
+                TIM1->SR = ~TIM_SR_CC1IF;
+                TIM1->DIER |= TIM_DIER_CC1IE;
+
+                status.ign.dwell_event = event->next;
+
+                if (event->timing != status.ign.dwell_timing)
+                {
+                    event_update(event, status.ign.dwell_timing, 6);
+                }
+            }
 
             // Injection
             event = status.inj.event;
@@ -294,46 +329,6 @@ void TIM1_BRK_TIM9_IRQHandler(void)
                 if (event->timing != status.inj.timing)
                 {
                     event_update(event, status.inj.timing, config.inj_timing_step);
-                }
-            }
-
-            // Dwell
-            event = status.ign.dwell_event;
-            
-            if (
-                (event->cogs == status.sync.cogs)
-                && (event->stroke == status.sync.stroke)
-            )
-            {
-                TIM1->CCR1 = TIM1->CNT + (((uint32_t)event->ang_mod * status.sync.cogs_per) / 6);
-                TIM1->SR = ~TIM_SR_CC1IF;
-                TIM1->DIER |= TIM_DIER_CC1IE;
-
-                status.ign.dwell_event = event->next;
-
-                if (event->timing != status.ign.dwell_timing)
-                {
-                    event_update(event, status.ign.dwell_timing, 6);
-                }
-            }
-
-            // Spark
-            event = status.ign.spark_event;
-            
-            if (
-                (event->cogs == status.sync.cogs)
-                && (event->stroke == status.sync.stroke)
-            )
-            {
-                TIM1->CCR2 = TIM1->CNT + (((uint32_t)event->ang_mod * status.sync.cogs_per) / 6);
-                TIM1->SR = ~TIM_SR_CC2IF;
-                TIM1->DIER |= TIM_DIER_CC2IE;
-
-                status.ign.spark_event = event->next;
-
-                if (event->timing != status.ign.spark_timing)
-                {
-                    event_update(event, status.ign.spark_timing, 6);
                 }
             }
 
@@ -380,14 +375,14 @@ void TIM1_CC_IRQHandler(void)
     {
         TIM1->SR = ~TIM_SR_CC1IF;
         TIM1->DIER &= ~TIM_DIER_CC1IE;
-        GPIOD->ODR |= GPIO_ODR_ODR_13;
+        GPIOD->ODR |= GPIO_ODR_ODR_15;
     }
 
     if ((TIM1->DIER & TIM_DIER_CC2IE) && (TIM1->SR & TIM_SR_CC2IF))
     {
         TIM1->SR = ~TIM_SR_CC2IF;
         TIM1->DIER &= ~TIM_DIER_CC2IE;
-        GPIOD->ODR &= ~GPIO_ODR_ODR_13;
+        GPIOD->ODR &= ~GPIO_ODR_ODR_15;
     }
 
     if ((TIM1->SR & TIM_SR_CC3IF))
