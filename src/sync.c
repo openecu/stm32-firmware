@@ -4,9 +4,9 @@
 #include "injection.h"
 #include "status.h"
 
-/*
-    Initialize synchronization
-*/
+/**
+ * Initialize synchronization
+ */
 void sync_init(void)
 {
     // Reference input
@@ -55,9 +55,9 @@ void sync_init(void)
     NVIC_EnableIRQ(TIM1_CC_IRQn);
 }
 
-/*
-    Calculate and update RPM
-*/
+/**
+ * Calculate and update RPM
+ */
 void calc_rpm(void)
 {
     uint8_t i;
@@ -84,9 +84,40 @@ void calc_rpm(void)
     status.sync.rpm = status.sync.inst_freq; // or filt_freq ?
 }
 
-/*
-    Update event
-*/
+/**
+ * Initialize event queue
+ */
+void event_queue_init(sync_event_t events[], uint8_t n, uint16_t timing)
+{
+    uint8_t i, k;
+    sync_event_t *event;
+
+    for (i = 0; i < n; i++)
+    {
+        event = &events[i];
+        k = (i < (n - 1)) ? (i + 1) : 0;
+        event->next = &events[k];
+        event->offset = offset;
+        event_update(event, timing, 720);
+    }
+}
+
+/**
+ * Prepare next event in queue
+ */
+void event_queue_next(sync_event_t *event, uint16_t timing, uint16_t step)
+{
+    event = event->next;
+
+    if (event->timing != timing)
+    {
+        event_update(event, timing, step);
+    }
+}
+
+/**
+ * Update event
+ */
 void event_update(sync_event_t *event, uint16_t target, uint16_t step)
 {
     int16_t current;
@@ -271,9 +302,9 @@ void TIM1_UP_TIM10_IRQHandler(void)
     }
 }
 
-/*
-    Position ISR
-*/
+/**
+ * Position ISR
+ */
 void TIM1_BRK_TIM9_IRQHandler(void)
 {
     if ((TIM9->SR & TIM_SR_CC2IF))
@@ -384,9 +415,9 @@ void TIM1_BRK_TIM9_IRQHandler(void)
     }
 }
 
-/*
-    Events ISR
-*/
+/**
+ * Events ISR
+ */
 void TIM1_CC_IRQHandler(void)
 {
     if ((TIM1->DIER & TIM_DIER_CC1IE) && (TIM1->SR & TIM_SR_CC1IF))

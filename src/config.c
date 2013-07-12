@@ -159,6 +159,8 @@ config_t config = {
     {   // Idle ignition timing offset rpm
         -200, -150, -100, -75, -50, -25, 0, 25, 50, 75, 100, 150, 200, 300, 400, 500
     },
+        // Idle timing adjustment delta rpm threshold
+        25,
         // Idle recovery rpm threshold
         1800,
 

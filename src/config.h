@@ -98,6 +98,8 @@ typedef struct
     int16_t idle_ign_offset[CONF_IDLE_IGN_OFFSET_SIZE];
     // Idle ignition timing offset rpm
     int16_t idle_ign_offset_rpm[CONF_IDLE_IGN_OFFSET_SIZE];
+    // Idle timing adjustment delta rpm threshold
+    uint8_t idle_ign_adj_rpm_thres;
     // Idle recovery rpm threshold
     uint16_t idle_rec_rpm_thres;
 

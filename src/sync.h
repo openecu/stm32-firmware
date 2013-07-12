@@ -57,6 +57,8 @@ void sync_init(void);
 
 void calc_rpm(void);
 
+void event_queue_init(sync_event_t events[], uint8_t n, uint16_t timing);
+
 void event_update(sync_event_t *event, uint16_t target, uint16_t step);
 
 #endif
