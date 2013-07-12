@@ -60,10 +60,28 @@ void sync_init(void)
 */
 void calc_rpm(void)
 {
-    uint32_t stroke_time;
+    uint8_t i;
+    uint32_t stroke_time, freq_sum;
 
     stroke_time = status.sync.stroke_time;
-    status.rpm = (stroke_time > 0) ? (30000000 / stroke_time) : 0;
+    status.sync.inst_freq = (stroke_time > 0) ? (30000000 / stroke_time) : 0;
+
+    status.sync.freq_buf[status.sync.freq_head] = status.sync.inst_freq;
+
+    if ((++status.sync.freq_head) == SYNC_STROKE_COUNT)
+    {
+        status.sync.freq_head = 0;
+    }
+
+    freq_sum = 0;
+
+    for (i = 0; i < SYNC_STROKE_COUNT; i++)
+    {
+        freq_sum += status.sync.freq_buf[i];
+    }
+
+    status.sync.filt_freq = freq_sum / SYNC_STROKE_COUNT;
+    status.sync.rpm = status.sync.inst_freq; // or filt_freq ?
 }
 
 /*

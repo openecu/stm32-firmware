@@ -4,6 +4,7 @@
 #include "cmsis/stm32f4xx.h"
 
 #define SYNC_FLAGS1_SYNCED  0
+#define SYNC_STROKE_COUNT   4
 
 typedef struct sync_event_s
 {
@@ -38,6 +39,14 @@ typedef struct sync_state_s
     uint16_t cogs_period;
     // Previous cogs time
     uint16_t prev_cogs_time;
+    // Instant frequency
+    uint16_t inst_freq;
+    // Frequency buffer
+    uint16_t freq_buf[SYNC_STROKE_COUNT];
+    // Frequency buffer head index
+    uint16_t freq_head;
+    // Filtered frequency
+    uint16_t filt_freq;
     // Flags 1
     uint32_t flags1;
 
