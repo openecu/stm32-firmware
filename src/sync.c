@@ -81,7 +81,7 @@ void sync_freq_calc(void)
     }
 
     status.sync.filt_freq = freq_sum / SYNC_STROKE_COUNT;
-    status.sync.rpm = status.sync.inst_freq; // or filt_freq ?
+    status.rpm = status.sync.inst_freq; // or filt_freq ?
 }
 
 /**
@@ -97,7 +97,7 @@ void event_queue_init(sync_event_t events[], uint8_t n, uint16_t timing)
         event = &events[i];
         k = (i < (n - 1)) ? (i + 1) : 0;
         event->next = &events[k];
-        event->offset = offset;
+        event->offset = i;
         event_update(event, timing, 720);
     }
 }

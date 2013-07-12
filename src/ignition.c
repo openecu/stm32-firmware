@@ -46,7 +46,7 @@ void ign_timing_calc(void)
     else
     {
         timing_adv = table2d_lookup(status.load, status.sync.filt_freq,
-            CONF_IGN_TIMING_LOAD_SIZE, CONF_IGN_TIMING_RPM_SIZE
+            CONF_IGN_TIMING_LOAD_SIZE, CONF_IGN_TIMING_RPM_SIZE,
             config.ign_timing_load, config.ign_timing_rpm, config.ign_timing);
     }
 

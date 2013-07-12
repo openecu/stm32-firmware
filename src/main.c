@@ -12,8 +12,8 @@ int main(void)
 {
     RCC->AHB1ENR |= (RCC_AHB1ENR_GPIOAEN | RCC_AHB1ENR_GPIOBEN | RCC_AHB1ENR_GPIOCEN 
         | RCC_AHB1ENR_GPIODEN | RCC_AHB1ENR_GPIOEEN | RCC_AHB1ENR_DMA1EN);
-    RCC->APB1ENR |= (RCC_APB1ENR_USART2EN | RCC_APB1ENR_TIM13EN | RCC_APB1ENR_TIM7EN 
-        | RCC_APB1ENR_TIM2EN);
+    RCC->APB1ENR |= (RCC_APB1ENR_USART2EN | RCC_APB1ENR_TIM2EN | RCC_APB1ENR_TIM13EN 
+        | RCC_APB1ENR_TIM6EN | RCC_APB1ENR_TIM7EN);
     RCC->APB2ENR |= (RCC_APB2ENR_USART1EN | RCC_APB2ENR_TIM10EN | RCC_APB2ENR_TIM9EN 
         | RCC_APB2ENR_TIM1EN);
 
@@ -48,8 +48,8 @@ int main(void)
     TIM6->DIER |= TIM_DIER_UIE;
     TIM6->CR1 |= (TIM_CR1_URS | TIM_CR1_CEN);
 
-    NVIC_SetPriority(TIM6_DAC_IRQ, 15);
-    NVIC_EnableIRQ(TIM6_DAC_IRQ);
+    NVIC_SetPriority(TIM6_DAC_IRQn, 15);
+    NVIC_EnableIRQ(TIM6_DAC_IRQn);
 
     /* Init I/O */
     sync_init();
@@ -62,7 +62,7 @@ int main(void)
 
     for (;;)
     {
-        IWDG->KR = 0xAAAA;
+        //IWDG->KR = 0xAAAA;
 
         inj_deadtime_calc();
         inj_afr_calc();
@@ -78,46 +78,50 @@ int main(void)
  */
 void TIM7_IRQHandler(void)
 {
-    static uint8_t ovf1;
-    static uint8_t ovf2;
-
-    IWDG->KR = 0xAAAA;
-
-    // 1 kHz loop
-    if ((++ovf1) == 10)
+    if ((TIM7->SR & TIM_SR_UIF))
     {
-        ovf1 = 0;
+	    static uint8_t ovf2;
+	    static uint8_t ovf1;
 
-        // 100 Hz loops
-        if ((++ovf2) == 10)
-        {
-            ovf2 = 0;
-        }
+        TIM7->SR = ~TIM_SR_UIF;
+	    IWDG->KR = 0xAAAA;
 
-        switch (ovf2)
-        {
-            case 0:
-            case 5:
-                idle_control();
-                break;
-        }
-    }
+	    // 1 kHz loop
+	    if ((++ovf1) == 10)
+	    {
+	        ovf1 = 0;
 
-    // Stroke loop
-    if (TESTBIT(status.flags1, FLAGS1_STROKE))
-    {
-        CLEARBIT(status.flags1, FLAGS1_STROKE);
+	        // 100 Hz loops
+	        if ((++ovf2) == 10)
+	        {
+	            ovf2 = 0;
+	        }
 
-        sync_freq_calc();
-        inj_pw_calc();
-        idle_ign_timing_adjust();
-    }
+	        switch (ovf2)
+	        {
+	            case 0:
+	            case 5:
+	                idle_control();
+	                break;
+	        }
+	    }
 
-    /*if (TESTBIT(status.comm.flags1, COMM_FLAGS1_READY))
-    {
-        CLEARBIT(status.comm.flags1, COMM_FLAGS1_READY);
-        DMA1_Stream6->CR |= DMA_SxCR_EN;
-    }*/
+	    // Stroke loop
+	    if (TESTBIT(status.flags1, FLAGS1_STROKE))
+	    {
+	        CLEARBIT(status.flags1, FLAGS1_STROKE);
+
+	        sync_freq_calc();
+	        inj_pw_calc();
+	        idle_ign_timing_adjust();
+	    }
+
+	    /*if (TESTBIT(status.comm.flags1, COMM_FLAGS1_READY))
+	    {
+	        CLEARBIT(status.comm.flags1, COMM_FLAGS1_READY);
+	        DMA1_Stream6->CR |= DMA_SxCR_EN;
+	    }*/
+	}
 }
 
 /** 
@@ -133,9 +137,9 @@ uint8_t sync_ref;
 
 void TIM6_DAC_IRQHandler(void)
 {
-    if ((TIM7->SR & TIM_SR_UIF))
+    if ((TIM6->SR & TIM_SR_UIF))
     {
-        TIM7->SR &= ~TIM_SR_UIF;
+        TIM6->SR = ~TIM_SR_UIF;
 
         if ((++sync_div) == 5)
         {

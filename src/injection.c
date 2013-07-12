@@ -2,6 +2,7 @@
 #include "injection.h"
 #include "status.h"
 #include "config.h"
+#include "math_ext.h"
 
 /** 
  * Initialize injection 

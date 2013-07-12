@@ -25,6 +25,10 @@ void inj_init(void);
 
 void inj_deadtime_calc(void);
 
+void inj_pw_calc(void);
+
+void inj_afr_calc(void);
+
 void inj_start(uint8_t no);
 
 void inj_stop(uint8_t no);
