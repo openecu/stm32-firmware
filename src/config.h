@@ -42,8 +42,10 @@ typedef struct
 	/* Injection */
 	// Injector flow
 	uint16_t inj_flow[CONF_INJ_COUNT];
-	// Injector deadtime
+	// Injector dead time
 	uint16_t inj_dead[CONF_INJ_DEAD_SIZE];
+	// Injector dead time battery voltage
+	uint16_t inj_dead_batv[CONF_INJ_DEAD_SIZE];
 	// Injection AFR
 	int16_t inj_afr[CONF_INJ_AFR_RPM_SIZE * CONF_INJ_AFR_LOAD_SIZE];
 	// Injection AFR rpm

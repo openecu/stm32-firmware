@@ -3,9 +3,9 @@
 #include "status.h"
 #include "config.h"
 
-/* 
-    Initialize injection 
-*/
+/** 
+ * Initialize injection 
+ */
 void inj_init(void)
 {
     uint8_t i, k;
@@ -35,9 +35,18 @@ void inj_init(void)
     NVIC_EnableIRQ(TIM2_IRQn);
 }
 
-/*
-    Start injection
-*/
+/**
+ * Calculate injector dead time
+ */
+void inj_deadtime_calc(void)
+{
+    status.inj.deadtime = table1d_lookup(status.batv, CONF_INJ_DEAD_SIZE, 
+        config.inj_dead_batv, config.inj_dead);
+}
+
+/**
+ * Start injection
+ */
 void inj_start(uint8_t no)
 {
     if ((no == 0) || (no == 2))
@@ -56,9 +65,9 @@ void inj_start(uint8_t no)
     }
 }
 
-/*
-    Stop injection
-*/
+/**
+ * Stop injection
+ */
 void inj_stop(uint8_t no)
 {
     if ((no == 0) || (no == 2))
@@ -73,9 +82,9 @@ void inj_stop(uint8_t no)
     }
 }
 
-/*
-    Injection stop events
-*/
+/**
+ * Injection stop events timer ISR
+ */
 void TIM2_IRQHandler(void)
 {
     if ((TIM2->DIER & TIM_DIER_CC1IE) && (TIM2->SR & TIM_SR_CC1IF))

@@ -14,12 +14,16 @@ typedef struct
 	sync_event_t *event;
 	// Target injection timing
 	uint16_t timing;
-	// Injection pulse width
+	// Injector pulse width
 	uint16_t pw;
+	// Injector dead time
+	uint16_t deadtime;
 
 } inj_state_t;
 
 void inj_init(void);
+
+void inj_deadtime_calc(void);
 
 void inj_start(uint8_t no);
 
