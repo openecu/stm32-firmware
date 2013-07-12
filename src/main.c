@@ -12,8 +12,10 @@ int main(void)
 {
     RCC->AHB1ENR |= (RCC_AHB1ENR_GPIOAEN | RCC_AHB1ENR_GPIOBEN | RCC_AHB1ENR_GPIOCEN 
         | RCC_AHB1ENR_GPIODEN | RCC_AHB1ENR_GPIOEEN | RCC_AHB1ENR_DMA1EN);
-    RCC->APB1ENR |= (RCC_APB1ENR_USART2EN | RCC_APB1ENR_TIM13EN | RCC_APB1ENR_TIM7EN | RCC_APB1ENR_TIM2EN);
-    RCC->APB2ENR |= (RCC_APB2ENR_USART1EN | RCC_APB2ENR_TIM10EN | RCC_APB2ENR_TIM9EN | RCC_APB2ENR_TIM1EN);
+    RCC->APB1ENR |= (RCC_APB1ENR_USART2EN | RCC_APB1ENR_TIM13EN | RCC_APB1ENR_TIM7EN 
+        | RCC_APB1ENR_TIM2EN);
+    RCC->APB2ENR |= (RCC_APB2ENR_USART1EN | RCC_APB2ENR_TIM10EN | RCC_APB2ENR_TIM9EN 
+        | RCC_APB2ENR_TIM1EN);
 
     /* Independed watchdog */
     IWDG->KR = 0x5555;
@@ -32,8 +34,10 @@ int main(void)
     NVIC_EnableIRQ(TIM7_IRQn);
 
     /* LED */
-    GPIOD->MODER |= (GPIO_MODER_MODER12_0 | GPIO_MODER_MODER13_0 | GPIO_MODER_MODER14_0 | GPIO_MODER_MODER15_0);
-    GPIOD->OSPEEDR |= (GPIO_OSPEEDER_OSPEEDR12_0 | GPIO_OSPEEDER_OSPEEDR13_0 | GPIO_OSPEEDER_OSPEEDR14_0 | GPIO_OSPEEDER_OSPEEDR15_0);
+    GPIOD->MODER |= (GPIO_MODER_MODER12_0 | GPIO_MODER_MODER13_0 
+        | GPIO_MODER_MODER14_0 | GPIO_MODER_MODER15_0);
+    GPIOD->OSPEEDR |= (GPIO_OSPEEDER_OSPEEDR12_0 | GPIO_OSPEEDER_OSPEEDR13_0 
+        | GPIO_OSPEEDER_OSPEEDR14_0 | GPIO_OSPEEDER_OSPEEDR15_0);
 
     /* Sync emulation (debug) */
     GPIOD->MODER |= (GPIO_MODER_MODER0_0 | GPIO_MODER_MODER1_0);
@@ -56,13 +60,12 @@ int main(void)
 
     __enable_irq();
 
-    uint16_t c;
-
     for (;;)
     {
         IWDG->KR = 0xAAAA;
 
         inj_deadtime_calc();
+        inj_afr_calc();
         ign_dwell_calc();
         ign_timing_calc();
     }
@@ -106,6 +109,7 @@ void TIM7_IRQHandler(void)
         CLEARBIT(status.flags1, FLAGS1_STROKE);
 
         sync_freq_calc();
+        inj_pw_calc();
         idle_ign_timing_adjust();
     }
 

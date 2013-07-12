@@ -66,6 +66,8 @@ typedef struct
     /* Ignition*/
     // Ignition dwell
     uint16_t ign_dwell[CONF_IGN_DWELL_SIZE];
+    // Ignition dwell battery voltage
+    uint16_t ign_dwell_batv[CONF_IGN_DWELL_SIZE];
     // Ignition timing
     int16_t ign_timing[CONF_IGN_TIMING_RPM_SIZE * CONF_IGN_TIMING_LOAD_SIZE];
     // Ignition timing rpm

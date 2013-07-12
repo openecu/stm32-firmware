@@ -30,6 +30,22 @@ void inj_deadtime_calc(void)
 }
 
 /**
+ * Calculate injector pulse width
+ */
+void inj_pw_calc(void)
+{
+
+}
+
+/**
+ * Calculate injection A/F ratio
+ */
+void inj_afr_calc(void)
+{
+
+}
+
+/**
  * Start injection
  */
 void inj_start(uint8_t no)

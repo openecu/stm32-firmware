@@ -53,7 +53,7 @@ void idle_ign_timing_adjust(void)
 {
     int16_t delta_rpm, ign_offset;
 
-    delta_rpm = status.idle.target_rpm - status.rpm;
+    delta_rpm = status.idle.target_rpm - status.sync.inst_freq;
 
     if (ABS(delta_rpm) < config.idle_ign_adj_rpm_thres)
     {

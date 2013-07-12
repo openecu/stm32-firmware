@@ -14,6 +14,8 @@ typedef struct ign_state_s
     sync_event_t *dwell_event;
     // Dwell timing
     uint16_t dwell_timing;
+    // Dwell time
+    uint16_t dwell_time;
     // Spark events
     sync_event_t spark_events[IGN_COUNT];
     // Current spark event
