@@ -55,8 +55,15 @@ void idle_ign_timing_adjust(void)
 
     delta_rpm = status.idle.target_rpm - status.rpm;
 
-    ign_offset = table1d_lookup(delta_rpm, CONF_IDLE_IGN_OFFSET_SIZE, 
-        config.idle_ign_offset_rpm, config.idle_ign_offset);
+    if (ABS(delta_rpm) < config.idle_ign_adj_rpm_thres)
+    {
+        ign_offset = 0;
+    }
+    else
+    {
+        ign_offset = table1d_lookup(delta_rpm, CONF_IDLE_IGN_OFFSET_SIZE, 
+            config.idle_ign_offset_rpm, config.idle_ign_offset);
+    }
 
     status.idle.delta_rpm = delta_rpm;
     status.idle.ign_offset = ign_offset;

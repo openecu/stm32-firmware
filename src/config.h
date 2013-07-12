@@ -108,8 +108,12 @@ typedef struct
     uint16_t crank_inj_pw[CONF_CRANK_INJ_PW_SIZE];
     // Crank injection timing
     uint16_t crank_inj_timing[CONF_CRANK_INJ_TIMING_SIZE];
+    // Crank injection timing rpm
+    uint16_t crank_inj_timing_rpm[CONF_CRANK_IGN_TIMING_SIZE];
     // Crank ignition timing
     int16_t crank_ign_timing[CONF_CRANK_IGN_TIMING_SIZE];
+    // Crank ignition timing rpm
+    uint16_t crank_ign_timing_rpm[CONF_CRANK_IGN_TIMING_SIZE];
 
     /* Sensors */
     // MAF sensor conversion

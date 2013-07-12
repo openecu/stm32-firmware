@@ -8,8 +8,10 @@
 #include "sync.h"
 #include "comm.h"
 
-#define FLAGS1_RUN      1
-#define FLAGS1_STROKE   2
+#define FLAGS1_RUN          1
+#define FLAGS1_STROKE       2
+#define FLAGS1_CRANK        3
+#define FLAGS1_IDLE         4
 
 typedef struct status_s
 {
@@ -20,6 +22,8 @@ typedef struct status_s
     uint16_t prev_rpm;
     // Delta RPM
     int16_t delta_rpm;
+    // Load
+    uint16_t load;
     // Throttle position
     uint16_t tp;
     // Previous throttle position

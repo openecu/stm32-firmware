@@ -25,4 +25,6 @@ typedef struct ign_state_s
 
 void ign_init(void);
 
+void ign_timing_calc(void);
+
 #endif

@@ -62,6 +62,7 @@ int main(void)
         IWDG->KR = 0xAAAA;
 
         inj_deadtime_calc();
+        ign_timing_calc();
     }
 
     return 0;
