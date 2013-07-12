@@ -4,6 +4,7 @@
 #include "cmsis/stm32f4xx.h"
 
 #define SYNC_FLAGS1_SYNCED  0
+
 #define SYNC_STROKE_COUNT   4
 
 typedef struct sync_event_s

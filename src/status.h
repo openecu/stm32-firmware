@@ -8,8 +8,8 @@
 #include "sync.h"
 #include "comm.h"
 
-#define FLAGS1_RUN      0x00000001
-#define FLAGS1_STROKE   0x00000002
+#define FLAGS1_RUN      1
+#define FLAGS1_STROKE   2
 
 typedef struct status_s
 {

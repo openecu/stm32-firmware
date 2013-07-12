@@ -9,33 +9,33 @@
 #define TESTBIT(addr, bit)      (*(vu32 *)(SRAM1_BB_BASE | ((((u32)&addr) - SRAM1_BASE) << 5) | ((bit) << 2)))
 
 /* Injection */
-#define CONF_INJ_COUNT    			4
-#define CONF_INJ_DEAD_SIZE    		16
-#define CONF_INJ_AFR_RPM_SIZE     	20
-#define CONF_INJ_AFR_LOAD_SIZE    	20
+#define CONF_INJ_COUNT              4
+#define CONF_INJ_DEAD_SIZE          16
+#define CONF_INJ_AFR_RPM_SIZE       20
+#define CONF_INJ_AFR_LOAD_SIZE      20
 #define CONF_INJ_TIMING_RPM_SIZE    20
-#define CONF_INJ_TIMING_LOAD_SIZE 	20
-#define CONF_INJ_TRIM_RPM_SIZE		20
-#define CONF_INJ_TRIM_LOAD_SIZE		20
+#define CONF_INJ_TIMING_LOAD_SIZE   20
+#define CONF_INJ_TRIM_RPM_SIZE      20
+#define CONF_INJ_TRIM_LOAD_SIZE     20
 
 /* Ignition */
-#define CONF_IGN_DWELL_SIZE    		16
-#define CONF_IGN_TIMING_RPM_SIZE 	20
-#define CONF_IGN_TIMING_LOAD_SIZE	20
+#define CONF_IGN_DWELL_SIZE         16
+#define CONF_IGN_TIMING_RPM_SIZE    20
+#define CONF_IGN_TIMING_LOAD_SIZE   20
 
 /* Idle */
-#define CONF_IDLE_RPM_SIZE 			16
-#define CONF_IDLE_IGN_TIMING_SIZE	16
-#define CONF_IDLE_IGN_OFFSET_SIZE	16
+#define CONF_IDLE_RPM_SIZE          16
+#define CONF_IDLE_IGN_TIMING_SIZE   16
+#define CONF_IDLE_IGN_OFFSET_SIZE   16
 
 /* Cranking */
-#define CONF_CRANK_INJ_PW_SIZE		16
-#define CONF_CRANK_INJ_TIMING_SIZE	16
-#define CONF_CRANK_IGN_TIMING_SIZE	16
+#define CONF_CRANK_INJ_PW_SIZE      16
+#define CONF_CRANK_INJ_TIMING_SIZE  16
+#define CONF_CRANK_IGN_TIMING_SIZE  16
 
 /* Sensors */
-#define CONF_MAFS_CONV_SIZE	64
-#define CONF_ECTS_CONV_SIZE	32
+#define CONF_MAFS_CONV_SIZE 64
+#define CONF_ECTS_CONV_SIZE 32
 
 typedef struct
 {

@@ -82,8 +82,8 @@ void TIM7_IRQHandler(void)
     {
         ovf1 = 0;
 
-        // 200 Hz loops
-        if ((++ovf2) == 5)
+        // 100 Hz loops
+        if ((++ovf2) == 10)
         {
             ovf2 = 0;
         }
@@ -91,15 +91,8 @@ void TIM7_IRQHandler(void)
         switch (ovf2)
         {
             case 0:
+            case 5:
                 idle_control();
-                break;
-            case 1:
-                break;
-            case 2:
-                break;
-            case 3:
-                break;
-            case 4:
                 break;
         }
     }

@@ -4,7 +4,7 @@
 #include "cmsis/stm32f4xx.h"
 #include "sync.h"
 
-#define IGN_COUNT	4 
+#define IGN_COUNT   4 
 
 typedef struct ign_state_s
 {
