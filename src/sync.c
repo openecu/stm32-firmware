@@ -58,7 +58,7 @@ void sync_init(void)
 /**
  * Calculate and update RPM
  */
-void calc_rpm(void)
+void sync_freq_calc(void)
 {
     uint8_t i;
     uint32_t stroke_time, freq_sum;

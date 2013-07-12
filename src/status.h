@@ -8,6 +8,10 @@
 #include "sync.h"
 #include "comm.h"
 
+#define SETBIT(addr, bit)       (*(vu32 *)(SRAM1_BB_BASE | ((((u32)&addr) - SRAM1_BASE) << 5) | ((bit) << 2)) = 1)    
+#define CLEARBIT(addr, bit)     (*(vu32 *)(SRAM1_BB_BASE | ((((u32)&addr) - SRAM1_BASE) << 5) | ((bit) << 2)) = 0)    
+#define TESTBIT(addr, bit)      (*(vu32 *)(SRAM1_BB_BASE | ((((u32)&addr) - SRAM1_BASE) << 5) | ((bit) << 2)))
+
 #define FLAGS1_RUN          1
 #define FLAGS1_STROKE       2
 #define FLAGS1_CRANK        3

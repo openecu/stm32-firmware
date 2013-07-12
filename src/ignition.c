@@ -9,8 +9,8 @@
  */
 void ign_init(void)
 {
-    status.ign.dwell_timing = 331;
-    status.ign.spark_timing = 363;
+    status.ign.dwell_timing = 300;
+    status.ign.spark_timing = 360;
     event_queue_init(status.ign.dwell_events, IGN_COUNT, status.ign.dwell_timing);
     event_queue_init(status.ign.spark_events, IGN_COUNT, status.ign.spark_timing);
 }
@@ -49,5 +49,5 @@ void ign_timing_calc(void)
             config.ign_timing_load, config.ign_timing_rpm, config.ign_timing);
     }
 
-    status.ign.spark_timing = 360 + timing;
+    status.ign.spark_timing = 360 - timing;
 }

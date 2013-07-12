@@ -55,7 +55,7 @@ typedef struct sync_state_s
 
 void sync_init(void);
 
-void calc_rpm(void);
+void sync_freq_calc(void);
 
 void event_queue_init(sync_event_t events[], uint8_t n, uint16_t timing);
 

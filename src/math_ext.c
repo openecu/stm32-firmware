@@ -69,7 +69,8 @@ int16_t table2d_lookup(int16_t x, int16_t y, uint8_t nx, uint8_t ny,
     iy = table_index(&y, ny, vy);
 
     z = bilinear_interp(x, y,
-        data[iy][ix], data[iy + 1][ix], data[iy + 1][ix + 1], data[iy][ix + 1],
+        data[((iy << 4) + ix)], data[(((iy + 1) << 4) + ix)], 
+        data[(((iy << 4) + 1) + (ix + 1))], data[((iy << 4) + (ix + 1))],
         vx[ix], vx[ix + 1], vy[iy], vy[iy + 1]);
 
     return z;

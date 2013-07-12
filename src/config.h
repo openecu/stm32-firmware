@@ -4,10 +4,6 @@
 #include "cmsis/stm32f4xx.h"
 #include "pid.h"
 
-#define SETBIT(addr, bit)       (*(vu32 *)(SRAM1_BB_BASE | ((((u32)&addr) - SRAM1_BASE) << 5) | ((bit) << 2)) = 1)    
-#define CLEARBIT(addr, bit)     (*(vu32 *)(SRAM1_BB_BASE | ((((u32)&addr) - SRAM1_BASE) << 5) | ((bit) << 2)) = 0)    
-#define TESTBIT(addr, bit)      (*(vu32 *)(SRAM1_BB_BASE | ((((u32)&addr) - SRAM1_BASE) << 5) | ((bit) << 2)))
-
 /* Injection */
 #define CONF_INJ_COUNT              4
 #define CONF_INJ_DEAD_SIZE          16
@@ -93,7 +89,7 @@ typedef struct
     // Idle ignition timing
     int16_t idle_ign_timing[CONF_IDLE_IGN_TIMING_SIZE];
     // Idle ignition timing rpm
-    int16_t idle_ign_timing_rpm[CONF_IDLE_IGN_TIMING_SIZE];
+    uint16_t idle_ign_timing_rpm[CONF_IDLE_IGN_TIMING_SIZE];
     // Idle ignition timing offset
     int16_t idle_ign_offset[CONF_IDLE_IGN_OFFSET_SIZE];
     // Idle ignition timing offset rpm
@@ -134,6 +130,7 @@ typedef struct
     uint16_t ects_max_v;
     // ECT sensor minimum voltage
     uint16_t ects_min_v;
+
 } config_t;
 
 extern config_t config;

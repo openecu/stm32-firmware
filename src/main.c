@@ -1,9 +1,10 @@
-#include "comm.h"
-#include "config.h"
-#include "idle.h"
-#include "injection.h"
-#include "sync.h"
 #include "status.h"
+#include "config.h"
+#include "sync.h"
+#include "ignition.h"
+#include "injection.h"
+#include "idle.h"
+#include "comm.h"
 
 status_t status;
 
@@ -62,6 +63,7 @@ int main(void)
         IWDG->KR = 0xAAAA;
 
         inj_deadtime_calc();
+        ign_dwell_calc();
         ign_timing_calc();
     }
 
@@ -103,7 +105,7 @@ void TIM7_IRQHandler(void)
     {
         CLEARBIT(status.flags1, FLAGS1_STROKE);
 
-        calc_rpm();
+        sync_freq_calc();
         idle_ign_timing_adjust();
     }
 
