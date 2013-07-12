@@ -1,4 +1,5 @@
 /bin
 /src/target
 .DS_Store
-
+*.sublime-project
+*.sublime-workspace
