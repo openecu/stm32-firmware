@@ -1,8 +1,8 @@
 #include "idle.h"
-#include "config.h"
 #include "math_ext.h"
 #include "pid.h"
 #include "status.h"
+#include "config.h"
 
 /*
     Idle control init
@@ -29,7 +29,7 @@ void idle_control(void)
     target_rpm = table1d_lookup(status.ect, CONF_IDLE_RPM_SIZE, 
         config.idle_rpm_ect, config.idle_rpm);
 
-    pwm_duty = pid_do(&status.idle.pid, target_rpm, status.rpm);
+    pwm_duty = pid_do(&status.idle.pid, target_rpm, status.sync.filt_freq);
 
     if (pwm_duty < config.idle_pwm_duty_min)
     {
