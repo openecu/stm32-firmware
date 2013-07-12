@@ -26,7 +26,7 @@ int main(void)
     IWDG->KR = 0xCCCC;
 
     /* Loop timer */
-    TIM7->PSC = 8400;
+    TIM7->PSC = 4999;
     TIM7->ARR = 1;
     TIM7->DIER |= TIM_DIER_UIE;
     TIM7->CR1 |= (TIM_CR1_URS | TIM_CR1_CEN);
@@ -44,7 +44,7 @@ int main(void)
     GPIOD->MODER |= (GPIO_MODER_MODER0_0 | GPIO_MODER_MODER1_0);
     GPIOD->OSPEEDR |= (GPIO_OSPEEDER_OSPEEDR0_0 | GPIO_OSPEEDER_OSPEEDR1_0);
 
-    TIM6->PSC = 2500;
+    TIM6->PSC = 2499;
     TIM6->ARR = 1;
     TIM6->DIER |= TIM_DIER_UIE;
     TIM6->CR1 |= (TIM_CR1_URS | TIM_CR1_CEN);
@@ -130,9 +130,6 @@ void TIM7_IRQHandler(void)
 	        sync_freq_calc();
 	        inj_pw_calc();
 	        idle_ign_timing_adjust();
-
-	        uart_putc(status.sync.inst_freq >> 8);
-	        uart_putc(status.sync.inst_freq);
 	    }
 	}
 }
