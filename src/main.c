@@ -14,7 +14,7 @@ int main(void)
     RCC->APB1ENR |= (RCC_APB1ENR_USART2EN | RCC_APB1ENR_TIM13EN | RCC_APB1ENR_TIM7EN | RCC_APB1ENR_TIM2EN);
     RCC->APB2ENR |= (RCC_APB2ENR_USART1EN | RCC_APB2ENR_TIM10EN | RCC_APB2ENR_TIM9EN | RCC_APB2ENR_TIM1EN);
 
-	/* Independed watchdog */
+    /* Independed watchdog */
     IWDG->KR = 0x5555;
     IWDG->PR = 0;
     IWDG->RLR = 0xFF;
@@ -59,7 +59,7 @@ int main(void)
 
     for (;;)
     {
-    	IWDG->KR = 0xAAAA;
+        IWDG->KR = 0xAAAA;
 
         inj_deadtime_calc();
     }

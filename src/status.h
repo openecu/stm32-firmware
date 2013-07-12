@@ -13,23 +13,23 @@
 
 typedef struct status_s
 {
-	/* Sensors */
-	// RPM
-	uint16_t rpm;
-	// Previous RPM
-	uint16_t prev_rpm;
-	// Delta RPM
-	int16_t delta_rpm;
-	// Throttle position
-	uint16_t tp;
-	// Previous throttle position
-	uint16_t prev_tp;
-	// Delta throttle position
-	int16_t delta_tp;
-	// Engine coolant temperature
-	int16_t ect;
-	// Battery voltage
-	uint16_t batv;
+    /* Sensors */
+    // RPM
+    uint16_t rpm;
+    // Previous RPM
+    uint16_t prev_rpm;
+    // Delta RPM
+    int16_t delta_rpm;
+    // Throttle position
+    uint16_t tp;
+    // Previous throttle position
+    uint16_t prev_tp;
+    // Delta throttle position
+    int16_t delta_tp;
+    // Engine coolant temperature
+    int16_t ect;
+    // Battery voltage
+    uint16_t batv;
     // Injection pulse width
     uint16_t inj_pw;
 
@@ -47,7 +47,7 @@ typedef struct status_s
     // Comm
     comm_state_t comm;
 
-	/* Flags */
+    /* Flags */
     uint32_t flags1;
 
 } status_t;

@@ -4,20 +4,20 @@
 #include "cmsis/stm32f4xx.h"
 #include "sync.h"
 
-#define INJ_COUNT	4
+#define INJ_COUNT   4
 
 typedef struct
 {
-	// Injection events
-	sync_event_t events[INJ_COUNT];
-	// Current event
-	sync_event_t *event;
-	// Target injection timing
-	uint16_t timing;
-	// Injector pulse width
-	uint16_t pw;
-	// Injector dead time
-	uint16_t deadtime;
+    // Injection events
+    sync_event_t events[INJ_COUNT];
+    // Current event
+    sync_event_t *event;
+    // Target injection timing
+    uint16_t timing;
+    // Injector pulse width
+    uint16_t pw;
+    // Injector dead time
+    uint16_t deadtime;
 
 } inj_state_t;
 

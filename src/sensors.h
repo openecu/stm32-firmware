@@ -13,7 +13,7 @@
 
 typedef struct
 {
-	// MAF sensor buffer
+    // MAF sensor buffer
     uint16_t maf_buf[ADC_MAF_BUF_SIZE];
     // TP sensor buffer
     uint16_t tp_buf[ADC_TP_BUF_SIZE];
@@ -30,8 +30,8 @@ typedef struct
 
 typedef struct
 {
-	// ADC state
-	adc_state_t adc;
+    // ADC state
+    adc_state_t adc;
 
 } sens_state_t;
 
