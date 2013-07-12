@@ -7,6 +7,7 @@
 #include "comm.h"
 
 status_t status;
+uint8_t sync_psc = 100;
 
 int main(void)
 {
@@ -68,6 +69,14 @@ int main(void)
         inj_afr_calc();
         ign_dwell_calc();
         ign_timing_calc();
+
+        uint16_t c;
+        c = uart_getc();
+
+        if (!(c & UART_NO_DATA))
+        {
+            sync_psc = c;
+        }
     }
 
     return 0;
@@ -104,6 +113,13 @@ void TIM7_IRQHandler(void)
 	                idle_control();
 	                break;
 	        }
+
+		    // Communication
+		    if (TESTBIT(status.comm.flags1, COMM_FLAGS1_READY))
+		    {
+		        CLEARBIT(status.comm.flags1, COMM_FLAGS1_READY);
+		        //DMA1_Stream6->CR |= DMA_SxCR_EN;
+		    }
 	    }
 
 	    // Stroke loop
@@ -114,13 +130,10 @@ void TIM7_IRQHandler(void)
 	        sync_freq_calc();
 	        inj_pw_calc();
 	        idle_ign_timing_adjust();
-	    }
 
-	    /*if (TESTBIT(status.comm.flags1, COMM_FLAGS1_READY))
-	    {
-	        CLEARBIT(status.comm.flags1, COMM_FLAGS1_READY);
-	        DMA1_Stream6->CR |= DMA_SxCR_EN;
-	    }*/
+	        uart_putc(status.sync.inst_freq >> 8);
+	        uart_putc(status.sync.inst_freq);
+	    }
 	}
 }
 
@@ -141,7 +154,7 @@ void TIM6_DAC_IRQHandler(void)
     {
         TIM6->SR = ~TIM_SR_UIF;
 
-        if ((++sync_div) == 5)
+        if ((++sync_div) == sync_psc)
         {
             sync_div = 0;
 

@@ -64,7 +64,7 @@ void sync_freq_calc(void)
     uint32_t stroke_time, freq_sum;
 
     stroke_time = status.sync.stroke_time;
-    status.sync.inst_freq = (stroke_time > 0) ? (30000000 / stroke_time) : 0;
+    status.sync.inst_freq = (stroke_time > 0) ? (30000000L / stroke_time) : 0;
 
     status.sync.freq_buf[status.sync.freq_head] = status.sync.inst_freq;
 
@@ -167,7 +167,9 @@ void TIM1_UP_TIM10_IRQHandler(void)
 {
     if ((TIM10->SR & TIM_SR_CC1IF))
     {
-        TIM10->SR &= ~TIM_SR_CC1IF;
+        static uint16_t prev_ccr;
+
+        TIM10->SR = ~TIM_SR_CC1IF;
 
         // Synced
         if (TESTBIT(status.sync.flags1, SYNC_FLAGS1_SYNCED))
@@ -175,7 +177,7 @@ void TIM1_UP_TIM10_IRQHandler(void)
             // Rising edge
             if ((GPIOB->IDR & GPIO_IDR_IDR_8))
             {
-                TIM10->CNT = 0;
+                //TIM10->CNT = 0;
                 status.sync.cogs = 0;
 
                 /*if (status.sync.ref == 3)
@@ -192,10 +194,14 @@ void TIM1_UP_TIM10_IRQHandler(void)
                 SETBIT(status.flags1, FLAGS1_STROKE);
 
                 status.sync.prev_stroke_time = status.sync.stroke_time;
-                status.sync.stroke_time = ((uint32_t)status.sync.stroke_ovf << 16) + TIM10->CCR1;
+                status.sync.stroke_time = (TIM10->CCR1 < prev_ccr) 
+                    ? ((uint32_t)status.sync.stroke_ovf << 16) - (prev_ccr - TIM10->CCR1)
+                    : ((uint32_t)status.sync.stroke_ovf << 16) + (TIM10->CCR1 - prev_ccr);
+
+                prev_ccr = TIM10->CCR1;
                 status.sync.stroke_ovf = 0;
 
-                TIM10->SR &= ~TIM_SR_UIF;
+                TIM10->SR = ~TIM_SR_UIF;
             }
             // Falling edge
             /*else
@@ -291,7 +297,7 @@ void TIM1_UP_TIM10_IRQHandler(void)
 
     if ((TIM10->SR & TIM_SR_UIF))
     {
-        TIM10->SR &= ~TIM_SR_UIF;
+        TIM10->SR = ~TIM_SR_UIF;
 
         status.sync.stroke_ovf++;
 
@@ -310,7 +316,7 @@ void TIM1_BRK_TIM9_IRQHandler(void)
     if ((TIM9->SR & TIM_SR_CC2IF))
     {
         uint8_t i, k;
-        uint16_t ccr;
+        uint16_t ccr, cnt;
         sync_event_t *event;
 
         TIM9->SR = ~TIM_SR_CC2IF;
@@ -321,8 +327,13 @@ void TIM1_BRK_TIM9_IRQHandler(void)
             ccr = TIM9->CCR2;
             TIM9->CCR2 = (ccr >= 174) ? 0 : ccr + 6;
 
-            status.sync.cogs_period     = TIM10->CNT - status.sync.prev_cogs_time;
-            status.sync.prev_cogs_time  = TIM10->CNT;
+            cnt = TIM10->CNT;
+            status.sync.cogs_period = (cnt > status.sync.prev_cogs_time) 
+                ? (cnt - status.sync.prev_cogs_time) 
+                : (65536 - (status.sync.prev_cogs_time - cnt));
+
+            status.sync.prev_cogs_time  = cnt;
+            TIM1->CNT = 0;
 
             // Spark
             event = status.ign.spark_event;
@@ -332,9 +343,10 @@ void TIM1_BRK_TIM9_IRQHandler(void)
                 && (event->stroke == status.sync.stroke)
             )
             {
-                TIM1->CCR2 = TIM1->CNT + (((uint32_t)event->ang_mod * status.sync.cogs_period) / 6);
+                /*TIM1->CCR2 = ((uint32_t)event->ang_mod * status.sync.cogs_period) / 6;
                 TIM1->SR = ~TIM_SR_CC2IF;
-                TIM1->DIER |= TIM_DIER_CC2IE;
+                TIM1->DIER |= TIM_DIER_CC2IE;*/
+                GPIOD->BSRRH = GPIO_ODR_ODR_15;
 
                 status.ign.spark_event = event->next;
 
@@ -352,9 +364,10 @@ void TIM1_BRK_TIM9_IRQHandler(void)
                 && (event->stroke == status.sync.stroke)
             )
             {
-                TIM1->CCR1 = TIM1->CNT + (((uint32_t)event->ang_mod * status.sync.cogs_period) / 6);
+                /*TIM1->CCR1 = ((uint32_t)event->ang_mod * status.sync.cogs_period) / 6;
                 TIM1->SR = ~TIM_SR_CC1IF;
-                TIM1->DIER |= TIM_DIER_CC1IE;
+                TIM1->DIER |= TIM_DIER_CC1IE;*/
+                GPIOD->BSRRL = GPIO_ODR_ODR_15;
 
                 status.ign.dwell_event = event->next;
 
@@ -420,18 +433,18 @@ void TIM1_BRK_TIM9_IRQHandler(void)
  */
 void TIM1_CC_IRQHandler(void)
 {
-    if ((TIM1->DIER & TIM_DIER_CC1IE) && (TIM1->SR & TIM_SR_CC1IF))
+    if (TIM1->SR & TIM_SR_CC1IF)
     {
         TIM1->SR = ~TIM_SR_CC1IF;
-        TIM1->DIER &= ~TIM_DIER_CC1IE;
-        GPIOD->ODR |= GPIO_ODR_ODR_15;
+        //TIM1->DIER &= ~TIM_DIER_CC1IE;
+        GPIOD->BSRRL = GPIO_ODR_ODR_15;
     }
 
-    if ((TIM1->DIER & TIM_DIER_CC2IE) && (TIM1->SR & TIM_SR_CC2IF))
+    if (TIM1->SR & TIM_SR_CC2IF)
     {
         TIM1->SR = ~TIM_SR_CC2IF;
-        TIM1->DIER &= ~TIM_DIER_CC2IE;
-        GPIOD->ODR &= ~GPIO_ODR_ODR_15;
+        //TIM1->DIER &= ~TIM_DIER_CC2IE;
+        GPIOD->BSRRH = GPIO_ODR_ODR_15;
     }
 
     if ((TIM1->SR & TIM_SR_CC3IF))

@@ -34,8 +34,8 @@ void comm_init(void)
     NVIC_EnableIRQ(USART2_IRQn);
 
     /* DMA */
-    DMA1_Stream6->NDTR = sizeof(status);
-    DMA1_Stream6->M0AR = (uint32_t)&(status);
+    DMA1_Stream6->NDTR = sizeof(status.sync);
+    DMA1_Stream6->M0AR = (uint32_t)&(status.sync);
     DMA1_Stream6->PAR = (uint32_t)&(USART2->DR);
     // channel 4, memory increment, memory-to-peripheral, transfer complete interrupt
     DMA1_Stream6->CR |= DMA_SxCR_CHSEL_2 | DMA_SxCR_MINC | DMA_SxCR_DIR_0 | DMA_SxCR_TCIE;

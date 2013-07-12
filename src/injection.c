@@ -9,7 +9,7 @@
  */
 void inj_init(void)
 {
-    status.inj.pw = 20000;
+    status.inj.pw = 2000;
     status.inj.timing = 360;
     event_queue_init(status.inj.events, INJ_COUNT, status.inj.timing);
 
