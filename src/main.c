@@ -115,17 +115,17 @@ void TIM7_IRQHandler(void)
 	        }
 
 		    // Communication
-		    if (TESTBIT(status.comm.flags1, COMM_FLAGS1_READY))
+		    if (TSTBIT(status.comm.flags1, COMM_FLAGS1_READY))
 		    {
-		        CLEARBIT(status.comm.flags1, COMM_FLAGS1_READY);
+		        CLRBIT(status.comm.flags1, COMM_FLAGS1_READY);
 		        //DMA1_Stream6->CR |= DMA_SxCR_EN;
 		    }
 	    }
 
 	    // Stroke loop
-	    if (TESTBIT(status.flags1, FLAGS1_STROKE))
+	    if (TSTBIT(status.flags1, FLAGS1_STROKE))
 	    {
-	        CLEARBIT(status.flags1, FLAGS1_STROKE);
+	        CLRBIT(status.flags1, FLAGS1_STROKE);
 
 	        sync_freq_calc();
 	        inj_pw_calc();

@@ -8,14 +8,18 @@
 #include "sync.h"
 #include "comm.h"
 
-#define SETBIT(addr, bit)       (*(vu32 *)(SRAM1_BB_BASE | ((((u32)&addr) - SRAM1_BASE) << 5) | ((bit) << 2)) = 1)    
-#define CLEARBIT(addr, bit)     (*(vu32 *)(SRAM1_BB_BASE | ((((u32)&addr) - SRAM1_BASE) << 5) | ((bit) << 2)) = 0)    
-#define TESTBIT(addr, bit)      (*(vu32 *)(SRAM1_BB_BASE | ((((u32)&addr) - SRAM1_BASE) << 5) | ((bit) << 2)))
+#define SETBIT(addr, bit)   (*(vu32 *)(SRAM1_BB_BASE | ((((u32)&addr) - SRAM1_BASE) << 5) | ((bit) << 2)) = 1)    
+#define CLRBIT(addr, bit)   (*(vu32 *)(SRAM1_BB_BASE | ((((u32)&addr) - SRAM1_BASE) << 5) | ((bit) << 2)) = 0)    
+#define TSTBIT(addr, bit)   (*(vu32 *)(SRAM1_BB_BASE | ((((u32)&addr) - SRAM1_BASE) << 5) | ((bit) << 2)))
 
-#define FLAGS1_RUN          1
-#define FLAGS1_STROKE       2
-#define FLAGS1_CRANK        3
-#define FLAGS1_IDLE         4
+#define SETREG(addr, bit)   (*(vu32 *)(PERIPH_BB_BASE | ((((u32)&addr) - PERIPH_BASE) << 5) | ((bit) << 2)) = 1)    
+#define CLRREG(addr, bit)   (*(vu32 *)(PERIPH_BB_BASE | ((((u32)&addr) - PERIPH_BASE) << 5) | ((bit) << 2)) = 0)    
+#define TSTREG(addr, bit)   (*(vu32 *)(PERIPH_BB_BASE | ((((u32)&addr) - PERIPH_BASE) << 5) | ((bit) << 2)))
+
+#define FLAGS1_RUN          0
+#define FLAGS1_STROKE       1
+#define FLAGS1_CRANK        2
+#define FLAGS1_IDLE         3
 
 typedef struct status_s
 {

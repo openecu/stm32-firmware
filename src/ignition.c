@@ -32,12 +32,12 @@ void ign_timing_calc(void)
 {
     int16_t timing_adv;
 
-    if (TESTBIT(status.flags1, FLAGS1_CRANK))
+    if (TSTBIT(status.flags1, FLAGS1_CRANK))
     {
         timing_adv = table1d_lookup(status.sync.filt_freq, CONF_CRANK_IGN_TIMING_SIZE, 
             config.crank_ign_timing_rpm, config.crank_ign_timing);
     }
-    else if (TESTBIT(status.flags1, FLAGS1_IDLE))
+    else if (TSTBIT(status.flags1, FLAGS1_IDLE))
     {
         timing_adv = table1d_lookup(status.sync.filt_freq, CONF_IDLE_IGN_TIMING_SIZE, 
             config.idle_ign_timing_rpm, config.idle_ign_timing);
