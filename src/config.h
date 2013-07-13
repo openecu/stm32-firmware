@@ -74,6 +74,8 @@ typedef struct
     uint16_t ign_timing_rpm[CONF_IGN_TIMING_RPM_SIZE];
     // Ignition timing load
     uint16_t ign_timing_load[CONF_IGN_TIMING_LOAD_SIZE];
+    // Ignition timing step per stroke
+    uint8_t ign_timing_step;
 
     /* Idle */
     // Idle PID

@@ -316,6 +316,7 @@ void TIM1_BRK_TIM9_IRQHandler(void)
     {
         uint8_t i, k;
         uint16_t ccr, cnt;
+        uint16_t mask;
         sync_event_t *event;
 
         TIM9->SR = ~TIM_SR_CC2IF;
@@ -331,6 +332,8 @@ void TIM1_BRK_TIM9_IRQHandler(void)
                 ? (cnt - status.sync.prev_cogs_time) 
                 : (65536 - (status.sync.prev_cogs_time - cnt));
             status.sync.prev_cogs_time  = cnt;
+
+            mask = TIM1->DIER;
 
             // Spark
             event = status.ign.spark_event;
@@ -385,7 +388,7 @@ void TIM1_BRK_TIM9_IRQHandler(void)
             }*/
 
             //TIM1->CNT = 0;
-            TIM1->EGR |= TIM_EGR_UG;
+            TIM1->EGR |= mask;
 
             // Strobe
             if (status.sync.stroke == 0)
@@ -441,7 +444,7 @@ void TIM1_CC_IRQHandler(void)
 
         if (event->timing != status.ign.spark_timing)
         {
-            event_update(event, status.ign.spark_timing, 6);
+            event_update(event, status.ign.spark_timing, config.ign_timing_step);
         }
     }
 
@@ -457,7 +460,7 @@ void TIM1_CC_IRQHandler(void)
 
         if (event->timing != status.ign.dwell_timing)
         {
-            event_update(event, status.ign.dwell_timing, 6);
+            event_update(event, status.ign.dwell_timing, config.ign_timing_step);
         }
     }
 
@@ -473,7 +476,7 @@ void TIM1_CC_IRQHandler(void)
 
         if (event->timing != status.inj.timing)
         {
-            event_update(event, status.inj.timing, 6);
+            event_update(event, status.inj.timing, config.inj_timing_step);
         }
     }
 
