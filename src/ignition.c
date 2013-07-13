@@ -9,10 +9,10 @@
  */
 void ign_init(void)
 {
-    status.ign.dwell_timing = 351;
+    status.ign.dwell_timing = 300;
     event_queue_init(status.ign.dwell_events, IGN_COUNT, status.ign.dwell_timing);
 
-    status.ign.spark_timing = 363;
+    status.ign.spark_timing = 330;
     event_queue_init(status.ign.spark_events, IGN_COUNT, status.ign.spark_timing);
 }
 

@@ -24,11 +24,11 @@ void sync_init(void)
     GPIOE->AFR[0] |= (0x03 << 20);
 
     // Reference timer
-    TIM10->PSC = 99;
-    TIM10->CCMR1 |= TIM_CCMR1_CC1S_0;
-    TIM10->CCER |= TIM_CCER_CC1E;
-    TIM10->DIER |= (TIM_DIER_CC1IE | TIM_DIER_UIE);
-    TIM10->CR1 |= (TIM_CR1_URS | TIM_CR1_CEN);
+    TIM10->PSC      = 99;
+    TIM10->CCMR1    |= TIM_CCMR1_CC1S_0;
+    TIM10->CCER     |= TIM_CCER_CC1E;
+    TIM10->DIER     |= (TIM_DIER_CC1IE | TIM_DIER_UIE);
+    TIM10->CR1      |= (TIM_CR1_URS | TIM_CR1_CEN);
 
     // Position timer
     TIM9->PSC   = 0;
@@ -197,7 +197,6 @@ void TIM1_UP_TIM10_IRQHandler(void)
                 status.sync.stroke_time = (TIM10->CCR1 < prev_ccr) 
                     ? ((uint32_t)status.sync.stroke_ovf << 16) - (prev_ccr - TIM10->CCR1)
                     : ((uint32_t)status.sync.stroke_ovf << 16) + (TIM10->CCR1 - prev_ccr);
-
                 prev_ccr = TIM10->CCR1;
                 status.sync.stroke_ovf = 0;
 
@@ -318,19 +317,12 @@ void TIM1_BRK_TIM9_IRQHandler(void)
         uint8_t i, k;
         uint16_t ccr, cnt;
         sync_event_t *event;
-        uint8_t event_mask;
-
-uart_putc(0xFF);
-uart_putc(TIM10->CNT);
-uart_putc(TIM10->CNT >> 8);
 
         TIM9->SR = ~TIM_SR_CC2IF;
 
         // Do events only if synced
         if (TSTBIT(status.sync.flags1, SYNC_FLAGS1_SYNCED))
         {
-            event_mask = 0;
-
             ccr = TIM9->CCR2;
             TIM9->CCR2 = (ccr >= 174) ? 0 : ccr + 6;
 
@@ -348,10 +340,9 @@ uart_putc(TIM10->CNT >> 8);
                 && (event->stroke == status.sync.stroke)
             )
             {
-                TIM1->CCR1 = ((uint32_t)event->ang_mod * status.sync.cogs_period) / 6;
-                //TIM1->SR = ~TIM_SR_CC1IF;
+                TIM1->CCR1 = (event->ang_mod != 0) 
+                    ? (((uint32_t)event->ang_mod * status.sync.cogs_period) / 6) : 0;
                 SETREG(TIM1->DIER, 1/*TIM_DIER_CC1IE*/);
-                event_mask |= 0x01;
             }
 
             // Dwell
@@ -362,10 +353,9 @@ uart_putc(TIM10->CNT >> 8);
                 && (event->stroke == status.sync.stroke)
             )
             {
-                TIM1->CCR2 = ((uint32_t)event->ang_mod * status.sync.cogs_period) / 6;
-                //TIM1->SR = ~TIM_SR_CC2IF;
+                TIM1->CCR2 = (event->ang_mod != 0)
+                    ? (((uint32_t)event->ang_mod * status.sync.cogs_period) / 6) : 0;
                 SETREG(TIM1->DIER, 2/*TIM_DIER_CC2IE*/);
-                event_mask |= 0x02;
             }
 
             // Injection
@@ -376,10 +366,9 @@ uart_putc(TIM10->CNT >> 8);
                 && (event->stroke == status.sync.stroke)
             )
             {
-                TIM1->CCR3 = ((uint32_t)event->ang_mod * status.sync.cogs_period) / 6;
-                //TIM1->SR = ~TIM_SR_CC3IF;
+                TIM1->CCR3 = (event->ang_mod != 0) 
+                    ? (((uint32_t)event->ang_mod * status.sync.cogs_period) / 6) : 0;
                 SETREG(TIM1->DIER, 3/*TIM_DIER_CC3IE*/);
-                event_mask |= 0x04;
             }
 
             // Knock
@@ -390,51 +379,13 @@ uart_putc(TIM10->CNT >> 8);
                 && (event->stroke == status.sync.stroke)
             )
             {
-                TIM1->CCR4 = ((uint32_t)event->ang_mod * status.sync.cogs_period) / 6;
-                //TIM1->SR = ~TIM_SR_CC4IF;
+                TIM1->CCR4 = (event->ang_mod != 0) 
+                    ? (((uint32_t)event->ang_mod * status.sync.cogs_period) / 6) : 0;
                 SETREG(TIM1->DIER, 4);
-                event_mask |= 0x08;
             }*/
 
-            TIM1->CNT = 0;
-
-            // Update events
-            if ((event_mask & 0x01))
-            {
-                event = status.ign.spark_event;
-
-                if (event->timing != status.ign.spark_timing)
-                {
-                    event_update(event, status.ign.spark_timing, 6);
-                }
-            } 
-            else if ((event_mask & 0x02))
-            {
-                event = status.ign.dwell_event;
-
-                if (event->timing != status.ign.dwell_timing)
-                {
-                    event_update(event, status.ign.dwell_timing, 6);
-                }
-            }
-            else if ((event_mask & 0x04))
-            {
-                event = status.inj.event;
-
-                if (event->timing != status.inj.timing)
-                {
-                    event_update(event, status.inj.timing, 6);
-                }
-            }
-            /*else if ((event_mask & 0x08))
-            {
-                event = status.knock.event;
-
-                if (event->timing != status.knock.timing)
-                {
-                    event_update(event, status.knock.timing, 6);
-                }
-            }*/
+            //TIM1->CNT = 0;
+            TIM1->EGR |= TIM_EGR_UG;
 
             // Strobe
             if (status.sync.stroke == 0)
@@ -460,9 +411,6 @@ uart_putc(TIM10->CNT >> 8);
                 }
             }
         }
-
-        uart_putc(TIM10->CNT);
-        uart_putc(TIM10->CNT >> 8);
     }
 
     if ((TIM9->SR & TIM_SR_UIF))
@@ -490,6 +438,11 @@ void TIM1_CC_IRQHandler(void)
         event = status.ign.spark_event;
         GPIOD->BSRRH = GPIO_ODR_ODR_15;
         status.ign.spark_event = event->next;
+
+        if (event->timing != status.ign.spark_timing)
+        {
+            event_update(event, status.ign.spark_timing, 6);
+        }
     }
 
     // Dwell
@@ -501,6 +454,11 @@ void TIM1_CC_IRQHandler(void)
         event = status.ign.dwell_event;
         GPIOD->BSRRL = GPIO_ODR_ODR_15;
         status.ign.dwell_event = event->next;
+
+        if (event->timing != status.ign.dwell_timing)
+        {
+            event_update(event, status.ign.dwell_timing, 6);
+        }
     }
 
     // Injection
@@ -512,6 +470,11 @@ void TIM1_CC_IRQHandler(void)
         event = status.inj.event;
         inj_start(event->offset);
         status.inj.event = event->next;
+
+        if (event->timing != status.inj.timing)
+        {
+            event_update(event, status.inj.timing, 6);
+        }
     }
 
     // Knock
@@ -522,5 +485,10 @@ void TIM1_CC_IRQHandler(void)
 
         event = status.knock.event;
         status.knock.event = event->next;
+
+        if (event->timing != status.knock.timing)
+        {
+            event_update(event, status.knock.timing, 6);
+        }
     }*/
 }
