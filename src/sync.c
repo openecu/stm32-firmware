@@ -41,8 +41,9 @@ void sync_init(void)
     TIM9->CR1   |= (TIM_CR1_URS | TIM_CR1_CEN);
 
     // Events timer
-    TIM1->PSC = 99;
-    TIM1->CR1 |= TIM_CR1_CEN;
+    TIM1->PSC   = 99;
+    //TIM1->DIER  |= TIM_EGR_UG;
+    TIM1->CR1   |= TIM_CR1_CEN;
 
     // Interrupts
     NVIC_SetPriority(TIM1_BRK_TIM9_IRQn, 1);
@@ -61,10 +62,10 @@ void sync_init(void)
 void sync_freq_calc(void)
 {
     uint8_t i;
-    uint32_t stroke_time, freq_sum;
+    uint32_t stroke_period, freq_sum;
 
-    stroke_time = status.sync.stroke_time;
-    status.sync.inst_freq = (stroke_time > 0) ? (30000000L / stroke_time) : 0;
+    stroke_period = status.sync.stroke_period;
+    status.sync.inst_freq = (stroke_period > 0) ? (30000000L / stroke_period) : 0;
 
     status.sync.freq_buf[status.sync.freq_head] = status.sync.inst_freq;
 
@@ -167,8 +168,6 @@ void TIM1_UP_TIM10_IRQHandler(void)
 {
     if ((TIM10->SR & TIM_SR_CC1IF))
     {
-        static uint16_t prev_ccr;
-
         TIM10->SR = ~TIM_SR_CC1IF;
 
         // Synced
@@ -193,11 +192,11 @@ void TIM1_UP_TIM10_IRQHandler(void)
                 SETBIT(status.flags1, FLAGS1_RUN);
                 SETBIT(status.flags1, FLAGS1_STROKE);
 
-                status.sync.prev_stroke_time = status.sync.stroke_time;
-                status.sync.stroke_time = (TIM10->CCR1 < prev_ccr) 
-                    ? ((uint32_t)status.sync.stroke_ovf << 16) - (prev_ccr - TIM10->CCR1)
-                    : ((uint32_t)status.sync.stroke_ovf << 16) + (TIM10->CCR1 - prev_ccr);
-                prev_ccr = TIM10->CCR1;
+                status.sync.prev_stroke_period = status.sync.stroke_period;
+                status.sync.stroke_period = (TIM10->CCR1 < status.sync.prev_stroke_time) 
+                    ? ((uint32_t)status.sync.stroke_ovf << 16) - (status.sync.prev_stroke_time - TIM10->CCR1)
+                    : ((uint32_t)status.sync.stroke_ovf << 16) + (TIM10->CCR1 - status.sync.prev_stroke_time);
+                status.sync.prev_stroke_time = TIM10->CCR1;
                 status.sync.stroke_ovf = 0;
 
                 TIM10->SR = ~TIM_SR_UIF;
@@ -229,7 +228,7 @@ void TIM1_UP_TIM10_IRQHandler(void)
                 TIM10->CNT = 0;
                 TIM10->CCER |= TIM_CCER_CC1P;
                 status.sync.cogs = 0;
-                status.sync.stroke_time = 0;
+                status.sync.stroke_period = 0;
                 status.sync.stroke_ovf = 0;
             }
             // Falling edge
@@ -317,6 +316,7 @@ void TIM1_BRK_TIM9_IRQHandler(void)
         uint8_t i, k;
         uint16_t ccr, cnt;
         uint16_t mask;
+        uint16_t period;
         sync_event_t *event;
 
         TIM9->SR = ~TIM_SR_CC2IF;
@@ -333,6 +333,9 @@ void TIM1_BRK_TIM9_IRQHandler(void)
                 : (65536 - (status.sync.prev_cogs_time - cnt));
             status.sync.prev_cogs_time  = cnt;
 
+            period = (status.sync.cogs_period << 1) - status.sync.prev_cogs_period;
+            status.sync.prev_cogs_period = status.sync.cogs_period;
+
             mask = TIM1->DIER;
 
             // Spark
@@ -344,7 +347,7 @@ void TIM1_BRK_TIM9_IRQHandler(void)
             )
             {
                 TIM1->CCR1 = (event->ang_mod != 0) 
-                    ? (((uint32_t)event->ang_mod * status.sync.cogs_period) / 6) : 0;
+                    ? (((uint32_t)event->ang_mod * period) / 6) : 0;
                 SETREG(TIM1->DIER, 1/*TIM_DIER_CC1IE*/);
             }
 
@@ -357,7 +360,7 @@ void TIM1_BRK_TIM9_IRQHandler(void)
             )
             {
                 TIM1->CCR2 = (event->ang_mod != 0)
-                    ? (((uint32_t)event->ang_mod * status.sync.cogs_period) / 6) : 0;
+                    ? (((uint32_t)event->ang_mod * period) / 6) : 0;
                 SETREG(TIM1->DIER, 2/*TIM_DIER_CC2IE*/);
             }
 
@@ -370,7 +373,7 @@ void TIM1_BRK_TIM9_IRQHandler(void)
             )
             {
                 TIM1->CCR3 = (event->ang_mod != 0) 
-                    ? (((uint32_t)event->ang_mod * status.sync.cogs_period) / 6) : 0;
+                    ? (((uint32_t)event->ang_mod * period) / 6) : 0;
                 SETREG(TIM1->DIER, 3/*TIM_DIER_CC3IE*/);
             }
 
@@ -383,7 +386,7 @@ void TIM1_BRK_TIM9_IRQHandler(void)
             )
             {
                 TIM1->CCR4 = (event->ang_mod != 0) 
-                    ? (((uint32_t)event->ang_mod * status.sync.cogs_period) / 6) : 0;
+                    ? (((uint32_t)event->ang_mod * period) / 6) : 0;
                 SETREG(TIM1->DIER, 4);
             }*/
 

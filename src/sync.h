@@ -28,18 +28,22 @@ typedef struct sync_state_s
 {
     // Stroke counter
     uint8_t stroke;
-    // Stroke time overflow counter
+    // Previous stroke time
+    uint16_t prev_stroke_time;
+    // Stroke period overflow counter
     uint8_t stroke_ovf;
-    // Stroke time
-    uint32_t stroke_time;
-    // Previous reference time
-    uint32_t prev_stroke_time;
-    // Cogs
+    // Stroke period
+    uint32_t stroke_period;
+    // Previous period time
+    uint32_t prev_stroke_period;
+    // Cogs counter
     uint8_t cogs;
-    // Time between cogs
-    uint16_t cogs_period;
     // Previous cogs time
     uint16_t prev_cogs_time;
+    // Time between cogs
+    uint16_t cogs_period;
+    // Previous cogs period
+    uint16_t prev_cogs_period;
     // Instant frequency
     uint16_t inst_freq;
     // Frequency buffer
