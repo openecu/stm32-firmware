@@ -20,32 +20,28 @@
 */
 
 /**
- * Initialize synchronization
+ * Инициализация синхронизации
  */
 void sync_init(void)
 {
-    // Reference input
-    // PB8
-    GPIOB->MODER |= GPIO_MODER_MODER8_1;
-    GPIOB->PUPDR &= ~GPIO_PUPDR_PUPDR8;
-     // TIM10_CH1
-    GPIOB->AFR[1] |= (0x03 << 0);
+    // Опорный вход сигнала текущего цилиндра
+    GPIOB->MODER    |= GPIO_MODER_MODER8_1;
+    GPIOB->PUPDR    &= ~GPIO_PUPDR_PUPDR8;
+    GPIOB->AFR[1]   |= (0x03 << 0); // TIM10_CH1
 
-    // Position input
-    // PE5
-    GPIOE->MODER |= GPIO_MODER_MODER5_1;
-    GPIOE->PUPDR &= ~GPIO_PUPDR_PUPDR5;
-    // TIM9_CH1
-    GPIOE->AFR[0] |= (0x03 << 20);
+    // Вход сигнала положения
+    GPIOE->MODER    |= GPIO_MODER_MODER5_1;
+    GPIOE->PUPDR    &= ~GPIO_PUPDR_PUPDR5;
+    GPIOE->AFR[0]   |= (0x03 << 20); // TIM9_CH1
 
-    // Reference timer
+    // Таймер опорного сигнала
     TIM10->PSC      = 99;
     TIM10->CCMR1    |= TIM_CCMR1_CC1S_0;
     TIM10->CCER     |= TIM_CCER_CC1E;
     TIM10->DIER     |= (TIM_DIER_CC1IE | TIM_DIER_UIE);
     TIM10->CR1      |= (TIM_CR1_URS | TIM_CR1_CEN);
 
-    // Position timer
+    // Таймер сигнала положения
     TIM9->PSC   = 0;
     TIM9->ARR   = 179;
     TIM9->CCR2  = 0;
@@ -55,12 +51,12 @@ void sync_init(void)
     TIM9->CCER  |= (TIM_CCER_CC1NP | TIM_CCER_CC1P);
     TIM9->CR1   |= (TIM_CR1_URS | TIM_CR1_CEN);
 
-    // Events timer
+    // Таймер событий между зубьями
     TIM1->PSC   = 99;
     TIM1->DIER  |= TIM_EGR_UG;
     TIM1->CR1   |= TIM_CR1_CEN;
 
-    // Interrupts
+    // Настройка прерываний
     NVIC_SetPriority(TIM1_BRK_TIM9_IRQn, 1);
     NVIC_EnableIRQ(TIM1_BRK_TIM9_IRQn);
 
@@ -103,7 +99,7 @@ void sync_freq_calc(void)
 }
 
 /**
- * Initialize event queue
+ * Инициализация очереди событий
  */
 void event_queue_init(sync_event_t events[], uint8_t n, uint16_t timing)
 {
@@ -168,7 +164,6 @@ void event_update(sync_event_t *event, uint16_t target, uint16_t step)
 
 /**
  * Обработчик прерывания TIM1_UP_TIM10_IRQn
- *
  * @todo Добавить обработку ошибок
  */
 void TIM1_UP_TIM10_IRQHandler(void)
@@ -268,7 +263,7 @@ void TIM1_UP_TIM10_IRQHandler(void)
                     status.sync.stroke = 3;
                 }
 
-                // Устанавлием события для текущего такта
+                // Устанавливаем события для текущего такта
                 // События впрыска
                 for (i = 0; i < INJ_COUNT; i++)
                 {
@@ -319,7 +314,8 @@ void TIM1_UP_TIM10_IRQHandler(void)
 }
 
 /**
- * Position ISR
+ * Обработчик прерывания TIM1_BRK_TIM9_IRQn
+ * @todo Что, если время между зубьями больше 65535 мкс?
  */
 void TIM1_BRK_TIM9_IRQHandler(void)
 {
@@ -327,7 +323,8 @@ void TIM1_BRK_TIM9_IRQHandler(void)
     if ((TIM9->SR & TIM_SR_CC2IF))
     {
         uint8_t i, k;
-        uint16_t cogs_time, cogs_period, angle, period;
+        uint16_t cogs_time, cogs_period, angle;
+        int16_t period;
         static uint16_t prev_cogs_time;
         static uint16_t prev_cogs_period;
         uint16_t mask;
@@ -350,6 +347,12 @@ void TIM1_BRK_TIM9_IRQHandler(void)
                 : (65536 - (prev_cogs_time - cogs_time));
 
             period = (cogs_period << 1) - prev_cogs_period;
+
+            /*if (period < 0)
+            {
+                period = 0;
+            }*/
+
             prev_cogs_time  = cogs_time;
             prev_cogs_period = cogs_period;
 
