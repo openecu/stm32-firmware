@@ -326,34 +326,40 @@ void TIM1_UP_TIM10_IRQHandler(void)
  */
 void TIM1_BRK_TIM9_IRQHandler(void)
 {
+    /* Прерывание по совпадению канала 2 TIM9 */
     if ((TIM9->SR & TIM_SR_CC2IF))
     {
         uint8_t i, k;
-        uint16_t ccr, cnt;
+        uint16_t cogs_time, cogs_period, angle, period;
+        static uint16_t prev_cogs_time;
+        static uint16_t prev_cogs_period;
         uint16_t mask;
-        uint16_t period;
         sync_event_t *event;
 
         TIM9->SR = ~TIM_SR_CC2IF;
 
-        // Do events only if synced
+        // Выполняем события только после синхронизации
         if (TSTBIT(status.sync.flags1, SYNC_FLAGS1_SYNCED))
         {
-            ccr = TIM9->CCR2;
-            TIM9->CCR2 = (ccr >= 174) ? 0 : ccr + 6;
+            // Обновляем регистр сравнения для генерирования следующего события 
+            // через 6 градусов КВ
+            angle = TIM9->CCR2;
+            TIM9->CCR2 = (angle < 174) ? (angle + 6) : 0;
 
-            cnt = TIM10->CNT;
-            status.sync.cogs_period = (cnt > status.sync.prev_cogs_time) 
-                ? (cnt - status.sync.prev_cogs_time) 
-                : (65536 - (status.sync.prev_cogs_time - cnt));
-            status.sync.prev_cogs_time  = cnt;
+            // Вычисляем предполагаемое время между зубьями с учётом ускорения КВ
+            cogs_time = TIM10->CNT;
+            cogs_period = (cogs_time > prev_cogs_time) 
+                ? (cogs_time - prev_cogs_time) 
+                : (65536 - (prev_cogs_time - cogs_time));
 
-            period = (status.sync.cogs_period << 1) - status.sync.prev_cogs_period;
-            status.sync.prev_cogs_period = status.sync.cogs_period;
+            period = (cogs_period << 1) - prev_cogs_period;
+            prev_cogs_time  = cogs_time;
+            prev_cogs_period = cogs_period;
 
+            // Сохраняем маску прерываний таймера событий
             mask = TIM1->DIER;
 
-            // Spark
+            // Завершение накопления катушки зажигания (искра)
             event = status.ign.spark_event;
 
             if (
@@ -366,7 +372,7 @@ void TIM1_BRK_TIM9_IRQHandler(void)
                 SETREG(TIM1->DIER, 1/*TIM_DIER_CC1IE*/);
             }
 
-            // Dwell
+            // Начало накопления катушки зажигания
             event = status.ign.dwell_event;
 
             if (
@@ -379,7 +385,7 @@ void TIM1_BRK_TIM9_IRQHandler(void)
                 SETREG(TIM1->DIER, 2/*TIM_DIER_CC2IE*/);
             }
 
-            // Injection
+            // Открытие форсунки
             event = status.inj.event;
 
             if (
@@ -392,7 +398,7 @@ void TIM1_BRK_TIM9_IRQHandler(void)
                 SETREG(TIM1->DIER, 3/*TIM_DIER_CC3IE*/);
             }
 
-            // Knock
+            // Фазовое окно контроля детонации
             /*event = status.knock.event;
 
             if (
@@ -405,27 +411,16 @@ void TIM1_BRK_TIM9_IRQHandler(void)
                 SETREG(TIM1->DIER, 4);
             }*/
 
-            //TIM1->CNT = 0;
+            // Применяем сохранённую маску прерываний таймера событий для того, 
+            // чтобы не пропустить события из-за ускорения КВ 
             TIM1->EGR |= mask;
 
-            // Strobe
-            if (status.sync.stroke == 0)
-            {
-                if (status.sync.cogs == 0)
-                {
-                    GPIOD->ODR |= GPIO_ODR_ODR_12;
-                }
-                else if (status.sync.cogs == 15)
-                {
-                    GPIOD->ODR &= ~GPIO_ODR_ODR_12;
-                }
-            }
-
-            // Increment cogs
+            // Увеличиваем номер зуба
             if ((++status.sync.cogs) == 30)
             {
                 status.sync.cogs = 0;
 
+                // Увеличиваем номер текущего цилиндра через каждые 30 зубьев (180 градусов)
                 if ((++status.sync.stroke) == 4)
                 {
                     status.sync.stroke = 0;
@@ -434,6 +429,7 @@ void TIM1_BRK_TIM9_IRQHandler(void)
         }
     }
 
+    /* Прерывание по переполнению TIM9 */
     if ((TIM9->SR & TIM_SR_UIF))
     {
         TIM9->SR = ~TIM_SR_UIF;
@@ -450,7 +446,7 @@ void TIM1_CC_IRQHandler(void)
 
     sr = TIM1->SR & TIM1->DIER;
 
-    // Spark
+    // Завершение накопления катушки зажигания (искра)
     if ((sr & TIM_SR_CC1IF))
     {
         TIM1->SR = ~TIM_SR_CC1IF;
@@ -466,7 +462,7 @@ void TIM1_CC_IRQHandler(void)
         }
     }
 
-    // Dwell
+    // Начало накопления катушки зажигания
     if ((sr & TIM_SR_CC2IF))
     {
         TIM1->SR = ~TIM_SR_CC2IF;
@@ -482,7 +478,7 @@ void TIM1_CC_IRQHandler(void)
         }
     }
 
-    // Injection
+    // Открытие форсунки
     if ((sr & TIM_SR_CC3IF))
     {
         TIM1->SR = ~TIM_SR_CC3IF;
@@ -498,7 +494,7 @@ void TIM1_CC_IRQHandler(void)
         }
     }
 
-    // Knock
+    // Фазовое окно контроля детонации
     /*if ((sr & TIM_SR_CC4IF))
     {
         TIM1->SR = ~TIM_SR_CC4IF;
