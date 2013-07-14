@@ -72,16 +72,18 @@ void sync_init(void)
 }
 
 /**
- * Calculate and update RPM
+ * Вычисление и сохранение текущего числа оборотов КВ
  */
 void sync_freq_calc(void)
 {
     uint8_t i;
     uint32_t stroke_period, freq_sum;
 
+    // Вычисляем и сохраняем мгновенное значение числа оборотов 
     stroke_period = status.sync.stroke_period;
     status.sync.inst_freq = (stroke_period > 0) ? (30000000L / stroke_period) : 0;
 
+    // Вычисляем и сохраняем среднее значение числа оборотов за 4 такта
     status.sync.freq_buf[status.sync.freq_head] = status.sync.inst_freq;
 
     if ((++status.sync.freq_head) == SYNC_STROKE_COUNT)
@@ -119,20 +121,7 @@ void event_queue_init(sync_event_t events[], uint8_t n, uint16_t timing)
 }
 
 /**
- * Prepare next event in queue
- */
-void event_queue_next(sync_event_t *event, uint16_t timing, uint16_t step)
-{
-    event = event->next;
-
-    if (event->timing != timing)
-    {
-        event_update(event, timing, step);
-    }
-}
-
-/**
- * Update event
+ * Обновление положения события с заданным шагом
  */
 void event_update(sync_event_t *event, uint16_t target, uint16_t step)
 {
@@ -141,6 +130,7 @@ void event_update(sync_event_t *event, uint16_t target, uint16_t step)
 
     current = event->timing;
 
+    // Если событие сдвигается вперёд
     if (target > current)
     {
         current += step;
@@ -150,6 +140,7 @@ void event_update(sync_event_t *event, uint16_t target, uint16_t step)
             current = target;
         }
     }
+    // Если событие сдвигается назад
     else if (target < current)
     {
         current -= step;
@@ -160,6 +151,7 @@ void event_update(sync_event_t *event, uint16_t target, uint16_t step)
         }
     }
 
+    // Обновляем номер цилиндра и угол между тактами
     q = current / 180;
     r = current % 180;
 
@@ -175,9 +167,9 @@ void event_update(sync_event_t *event, uint16_t target, uint16_t step)
 }
 
 /**
- * Stroke ISR
+ * Обработчик прерывания TIM1_UP_TIM10_IRQn
  *
- * @todo Add error process
+ * @todo Добавить обработку ошибок
  */
 void TIM1_UP_TIM10_IRQHandler(void)
 {
@@ -185,10 +177,10 @@ void TIM1_UP_TIM10_IRQHandler(void)
     {
         TIM10->SR = ~TIM_SR_CC1IF;
 
-        // Synced
+        // Если синхронизировано
         if (TSTBIT(status.sync.flags1, SYNC_FLAGS1_SYNCED))
         {
-            // Rising edge
+            // Передний фронт
             if ((GPIOB->IDR & GPIO_IDR_IDR_8))
             {
                 //TIM10->CNT = 0;
@@ -216,7 +208,7 @@ void TIM1_UP_TIM10_IRQHandler(void)
 
                 TIM10->SR = ~TIM_SR_UIF;
             }
-            // Falling edge
+            // Задний фронт
             /*else
             {
                 if (status.sync.ref == 0)
@@ -233,10 +225,10 @@ void TIM1_UP_TIM10_IRQHandler(void)
                 }
             }*/
         }
-        // Not synced
+        // Если не синхронизировано
         else
         {
-            // Rising edge
+            // Передний фронт
             if ((GPIOB->IDR & GPIO_IDR_IDR_8))
             {
                 TIM9->CNT = 0;
@@ -246,7 +238,7 @@ void TIM1_UP_TIM10_IRQHandler(void)
                 status.sync.stroke_period = 0;
                 status.sync.stroke_ovf = 0;
             }
-            // Falling edge
+            // Задний фронт
             else
             {
                 uint8_t pos, i;
@@ -255,27 +247,29 @@ void TIM1_UP_TIM10_IRQHandler(void)
                 TIM10->CCER &= ~TIM_CCER_CC1P;
                 pos = TIM9->CNT;
 
-                // Cyl. 1
+                // Цил. 1
                 if ((pos >= 15) && (pos <= 17))
                 {
                     status.sync.stroke = 0;
                 }
-                // Cyl. 2
+                // Цил. 2
                 else if ((pos >= 11) && (pos <= 13))
                 {
                     status.sync.stroke = 1;
                 }
-                // Cyl. 3
+                // Цил. 3
                 else if ((pos >= 7) && (pos <= 9))
                 {
                     status.sync.stroke = 2;
                 }
-                // Cyl. 4
+                // Цил. 4
                 else if ((pos >= 3) && (pos <= 5))
                 {
                     status.sync.stroke = 3;
                 }
 
+                // Устанавлием события для текущего такта
+                // События впрыска
                 for (i = 0; i < INJ_COUNT; i++)
                 {
                     event = &status.inj.events[i];
@@ -286,8 +280,10 @@ void TIM1_UP_TIM10_IRQHandler(void)
                     }
                 }
 
+                // События зажигания
                 for (i = 0; i < IGN_COUNT; i++)
                 {
+                    // Начало накопления катушки зажигания
                     event = &status.ign.dwell_events[i];
 
                     if (event->stroke == status.sync.stroke)
@@ -295,6 +291,7 @@ void TIM1_UP_TIM10_IRQHandler(void)
                         status.ign.dwell_event = event->next;
                     }
 
+                    // Завершение накоплнения катушки зажигания (искра)
                     event = &status.ign.spark_events[i];
 
                     if (event->stroke == status.sync.stroke)
