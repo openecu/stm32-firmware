@@ -48,8 +48,6 @@ typedef struct status_s
     /* Peripheral */
     // ADC
     sens_state_t sens;
-    // Sync
-    sync_state_t sync;
     // Injection
     inj_state_t inj;
     // Ignition

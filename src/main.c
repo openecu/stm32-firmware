@@ -45,7 +45,7 @@ int main(void)
     GPIOD->OSPEEDR  |= (GPIO_OSPEEDER_OSPEEDR0_0 | GPIO_OSPEEDER_OSPEEDR1_0);
 
     TIM6->PSC   = 2499;
-    TIM6->ARR   = 100;
+    TIM6->ARR   = 10;
     TIM6->DIER  |= TIM_DIER_UIE;
     TIM6->CR1   |= (TIM_CR1_URS | TIM_CR1_CEN);
 
@@ -53,8 +53,8 @@ int main(void)
     NVIC_EnableIRQ(TIM6_DAC_IRQn);
 
     /* Init I/O */
-    /*sync_init();
-    inj_init();
+    sync_init();
+    /*inj_init();
     ign_init();
     idle_init();*/
     comm_init();

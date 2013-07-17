@@ -29,7 +29,7 @@ void idle_control(void)
     target_rpm = table1d_lookup(status.ect, CONF_IDLE_RPM_SIZE, 
         config.idle_rpm_ect, config.idle_rpm);
 
-    pwm_duty = pid_do(&status.idle.pid, target_rpm, status.sync.filt_freq);
+    pwm_duty = pid_do(&status.idle.pid, target_rpm, status.rpm);
 
     if (pwm_duty < config.idle_pwm_duty_min)
     {
@@ -53,7 +53,7 @@ void idle_ign_timing_adjust(void)
 {
     int16_t delta_rpm, ign_offset;
 
-    delta_rpm = status.idle.target_rpm - status.sync.inst_freq;
+    delta_rpm = status.idle.target_rpm - 0; //status.sync.inst_freq;
 
     if (ABS(delta_rpm) < config.idle_ign_adj_rpm_thres)
     {
