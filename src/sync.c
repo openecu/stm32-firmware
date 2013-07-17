@@ -113,7 +113,7 @@ void sync_freq_calc(void)
         freq_sum += sync.freq_buf[i];
     }
 
-    sync.freq = freq_sum / SYNC_STROKE_COUNT;
+    sync.freq = (freq_sum > 0) ? (freq_sum / SYNC_STROKE_COUNT) : 0;
     status.rpm = sync.freq;
 }
 
@@ -220,6 +220,7 @@ void TIM1_UP_TIM10_IRQHandler(void)
             {
                 TIM9->CNT = 0;
                 TIM10->CNT = 0;
+                TIM10->SR = ~TIM_SR_UIF;
                 TIM10->CCER |= TIM_CCER_CC1P;
                 sync.prev_stroke_time = 0;
                 sync.stroke_period = 0;
