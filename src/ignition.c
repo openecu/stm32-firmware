@@ -34,18 +34,18 @@ void ign_timing_calc(void)
 
     if (TSTBIT(status.flags1, FLAGS1_CRANK))
     {
-        timing_adv = table1d_lookup(status.sync.filt_freq, CONF_CRANK_IGN_TIMING_SIZE, 
+        timing_adv = table1d_lookup(status.rpm, CONF_CRANK_IGN_TIMING_SIZE, 
             config.crank_ign_timing_rpm, config.crank_ign_timing);
     }
     else if (TSTBIT(status.flags1, FLAGS1_IDLE))
     {
-        timing_adv = table1d_lookup(status.sync.filt_freq, CONF_IDLE_IGN_TIMING_SIZE, 
+        timing_adv = table1d_lookup(status.rpm, CONF_IDLE_IGN_TIMING_SIZE, 
             config.idle_ign_timing_rpm, config.idle_ign_timing);
         timing_adv += status.idle.ign_offset;
     }
     else
     {
-        timing_adv = table2d_lookup(status.load, status.sync.filt_freq,
+        timing_adv = table2d_lookup(status.load, status.rpm,
             CONF_IGN_TIMING_LOAD_SIZE, CONF_IGN_TIMING_RPM_SIZE,
             config.ign_timing_load, config.ign_timing_rpm, config.ign_timing);
     }

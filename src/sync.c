@@ -27,6 +27,8 @@
     начало впрыска, фазовое окно контроля детонации).
 */
 
+sync_state_t sync;
+
 /**
  * Инициализация синхронизации
  */
@@ -43,10 +45,10 @@ void sync_init(void)
     GPIOE->AFR[0]   |= (0x03 << 20); // TIM9_CH1
 
     // Таймер опорного сигнала
-    // 1 МГц, режим захвата по заднему фронту, прерывание по захвату и переполнению 
+    // 1 МГц, режим захвата по переднему фронту, прерывание по захвату и переполнению 
     TIM10->PSC      = 99;
     TIM10->CCMR1    |= TIM_CCMR1_CC1S_0;
-    TIM10->CCER     |= (TIM_CCER_CC1P | TIM_CCER_CC1E);
+    TIM10->CCER     |= TIM_CCER_CC1E;
     TIM10->DIER     |= (TIM_DIER_CC1IE | TIM_DIER_UIE);
     TIM10->CR1      |= (TIM_CR1_URS | TIM_CR1_CEN);
 
@@ -63,7 +65,7 @@ void sync_init(void)
 
     // Таймер событий между зубьями
     TIM1->PSC   = 99;
-    TIM1->DIER  |= TIM_DIER_UIE;
+    //TIM1->DIER  |= TIM_DIER_UIE;
     TIM1->CR1   |= TIM_CR1_CEN;
 
     // Настройка прерываний
@@ -78,34 +80,41 @@ void sync_init(void)
 }
 
 /**
- * Вычисление и сохранение текущего числа оборотов КВ
+ * Вычисление и сохранение текущего числа оборотов КВ.
  */
 void sync_freq_calc(void)
 {
     uint8_t i;
-    uint32_t stroke_period, freq_sum;
+    uint32_t stroke_period, freq, freq_sum;
 
     // Вычисляем и сохраняем мгновенное значение числа оборотов 
-    stroke_period = status.sync.stroke_period;
-    status.sync.inst_freq = (stroke_period > 0) ? (30000000L / stroke_period) : 0;
+    stroke_period = sync.stroke_period;
+    freq = (stroke_period > 0) ? (30000000L / stroke_period) : 0;
+
+    if (freq > 0xFFFF)
+    {
+        freq = 0xFFFF;
+    }
+
+    sync.inst_freq = freq;
 
     // Вычисляем и сохраняем среднее значение числа оборотов за 4 такта
-    status.sync.freq_buf[status.sync.freq_head] = status.sync.inst_freq;
+    sync.freq_buf[sync.freq_head] = freq;
 
-    if ((++status.sync.freq_head) == SYNC_STROKE_COUNT)
+    if ((++sync.freq_head) == SYNC_STROKE_COUNT)
     {
-        status.sync.freq_head = 0;
+        sync.freq_head = 0;
     }
 
     freq_sum = 0;
 
     for (i = 0; i < SYNC_STROKE_COUNT; i++)
     {
-        freq_sum += status.sync.freq_buf[i];
+        freq_sum += sync.freq_buf[i];
     }
 
-    status.sync.filt_freq = freq_sum / SYNC_STROKE_COUNT;
-    status.rpm = status.sync.inst_freq; // or filt_freq ?
+    sync.freq = (freq_sum > 0) ? (freq_sum / SYNC_STROKE_COUNT) : 0;
+    status.rpm = sync.freq;
 }
 
 /**
@@ -157,7 +166,7 @@ void event_update(sync_event_t *event, uint16_t target, uint16_t step)
         }
     }
 
-    // Обновляем номер цилиндра и угол между тактами
+    // Обновляем номер такта, номер зуба и угол между зубьями
     q = current / 180;
     r = current % 180;
 
@@ -166,14 +175,15 @@ void event_update(sync_event_t *event, uint16_t target, uint16_t step)
     event->cogs     = r / 6;
     event->ang_mod  = r % 6;
 
-    if (event->stroke >= 4)
+    if (event->stroke >= SYNC_STROKE_COUNT)
     {
-        event->stroke -= 4;
+        event->stroke -= SYNC_STROKE_COUNT;
     }
 }
 
 /**
  * Обработчик прерывания TIM1_UP_TIM10_IRQn
+ *
  * @todo Добавить обработку ошибок
  */
 void TIM1_UP_TIM10_IRQHandler(void)
@@ -183,52 +193,24 @@ void TIM1_UP_TIM10_IRQHandler(void)
         TIM10->SR = ~TIM_SR_CC1IF;
 
         // Если синхронизировано
-        if (TSTBIT(status.sync.flags1, SYNC_FLAGS1_SYNCED))
+        if (TSTBIT(sync.flags1, SYNC_FLAGS1_SYNCED))
         {
-            // Передний фронт
-            if ((GPIOB->IDR & GPIO_IDR_IDR_8))
+            // Задний фронт
+            if (!(GPIOB->IDR & GPIO_IDR_IDR_8))
             {
-                //TIM10->CNT = 0;
-                status.sync.cogs = 0;
-
-                /*if (status.sync.ref == 3)
-                {
-                    status.sync.ref = 0;
-                    TIM10->CCER |= TIM_CCER_CC1P;
-                }
-                else
-                {
-                    status.sync.ref++;
-                }*/
-
+                SETBIT(sync.flags1, SYNC_FLAGS1_TRIG);
                 SETBIT(status.flags1, FLAGS1_RUN);
                 SETBIT(status.flags1, FLAGS1_STROKE);
 
-                status.sync.prev_stroke_period = status.sync.stroke_period;
-                status.sync.stroke_period = (TIM10->CCR1 < status.sync.prev_stroke_time) 
-                    ? ((uint32_t)status.sync.stroke_ovf << 16) - (status.sync.prev_stroke_time - TIM10->CCR1)
-                    : ((uint32_t)status.sync.stroke_ovf << 16) + (TIM10->CCR1 - status.sync.prev_stroke_time);
-                status.sync.prev_stroke_time = TIM10->CCR1;
-                status.sync.stroke_ovf = 0;
+                sync.stroke_period = (TIM10->CCR1 < sync.prev_stroke_time) 
+                    ? ((uint32_t)sync.stroke_ovf << 16) - (sync.prev_stroke_time - TIM10->CCR1)
+                    : ((uint32_t)sync.stroke_ovf << 16) + (TIM10->CCR1 - sync.prev_stroke_time);
 
+                sync.prev_stroke_time = TIM10->CCR1;
+                sync.prev_stroke_period = sync.stroke_period;
+                sync.stroke_ovf = 0;
                 TIM10->SR = ~TIM_SR_UIF;
             }
-            // Задний фронт
-            /*else
-            {
-                if (status.sync.ref == 0)
-                {
-                    uint8_t pos;
-
-                    pos = TIM9->CNT;
-                    TIM10->CCER &= ~TIM_CCER_CC1P;
-
-                    if ((pos < 15) || (pos > 17))
-                    {
-                        CLEARBIT(status.sync.flags1, SYNC_FLAGS1_SYNCED);
-                    }
-                }
-            }*/
         }
         // Если не синхронизировано
         else
@@ -238,10 +220,11 @@ void TIM1_UP_TIM10_IRQHandler(void)
             {
                 TIM9->CNT = 0;
                 TIM10->CNT = 0;
+                TIM10->SR = ~TIM_SR_UIF;
                 TIM10->CCER |= TIM_CCER_CC1P;
-                status.sync.cogs = 0;
-                status.sync.stroke_period = 0;
-                status.sync.stroke_ovf = 0;
+                sync.prev_stroke_time = 0;
+                sync.stroke_period = 0;
+                sync.stroke_ovf = 0;
             }
             // Задний фронт
             else
@@ -249,28 +232,27 @@ void TIM1_UP_TIM10_IRQHandler(void)
                 uint8_t pos, i;
                 sync_event_t *event;
 
-                TIM10->CCER &= ~TIM_CCER_CC1P;
                 pos = TIM9->CNT;
 
                 // Цил. 1
                 if ((pos >= 15) && (pos <= 17))
                 {
-                    status.sync.stroke = 0;
+                    sync.stroke = 0;
                 }
                 // Цил. 2
                 else if ((pos >= 11) && (pos <= 13))
                 {
-                    status.sync.stroke = 1;
+                    sync.stroke = 1;
                 }
                 // Цил. 3
                 else if ((pos >= 7) && (pos <= 9))
                 {
-                    status.sync.stroke = 2;
+                    sync.stroke = 2;
                 }
                 // Цил. 4
                 else if ((pos >= 3) && (pos <= 5))
                 {
-                    status.sync.stroke = 3;
+                    sync.stroke = 3;
                 }
 
                 // Устанавливаем события для текущего такта
@@ -279,7 +261,7 @@ void TIM1_UP_TIM10_IRQHandler(void)
                 {
                     event = &status.inj.events[i];
 
-                    if (event->stroke == status.sync.stroke)
+                    if (event->stroke == sync.stroke)
                     {
                         status.inj.event = event->next;
                     }
@@ -291,7 +273,7 @@ void TIM1_UP_TIM10_IRQHandler(void)
                     // Начало накопления катушки зажигания
                     event = &status.ign.dwell_events[i];
 
-                    if (event->stroke == status.sync.stroke)
+                    if (event->stroke == sync.stroke)
                     {
                         status.ign.dwell_event = event->next;
                     }
@@ -299,13 +281,13 @@ void TIM1_UP_TIM10_IRQHandler(void)
                     // Завершение накоплнения катушки зажигания (искра)
                     event = &status.ign.spark_events[i];
 
-                    if (event->stroke == status.sync.stroke)
+                    if (event->stroke == sync.stroke)
                     {
                         status.ign.spark_event = event->next;
                     }
                 }
 
-                SETBIT(status.sync.flags1, SYNC_FLAGS1_SYNCED);
+                SETBIT(sync.flags1, SYNC_FLAGS1_SYNCED);
             }
         }
     }
@@ -314,10 +296,11 @@ void TIM1_UP_TIM10_IRQHandler(void)
     {
         TIM10->SR = ~TIM_SR_UIF;
 
-        status.sync.stroke_ovf++;
+        sync.stroke_ovf++;
 
-        if (status.sync.stroke_ovf >= 16)
+        if (sync.stroke_ovf >= 16)
         {
+            CLRBIT(sync.flags1, SYNC_FLAGS1_SYNCED);
             CLRBIT(status.flags1, FLAGS1_RUN);
         }
     }
@@ -333,38 +316,48 @@ void TIM1_BRK_TIM9_IRQHandler(void)
     if ((TIM9->SR & TIM_SR_CC2IF))
     {
         uint8_t i, k;
-        uint16_t cogs_time, cogs_period, angle;
-        int16_t period;
-        static uint16_t prev_cogs_time;
-        static uint16_t prev_cogs_period;
+        uint16_t angle, cogs_time, cogs_period;
+        int32_t next_cogs_period;
         uint16_t mask;
         sync_event_t *event;
 
         TIM9->SR = ~TIM_SR_CC2IF;
 
-        // Выполняем события только после синхронизации
-        if (TSTBIT(status.sync.flags1, SYNC_FLAGS1_SYNCED))
+        // Синхронизация номера зуба по опорному сигналу
+        if (TSTBIT(sync.flags1, SYNC_FLAGS1_TRIG))
         {
+            CLRBIT(sync.flags1, SYNC_FLAGS1_TRIG);
+            sync.cogs = 0;
+        }
+
+        // Выполняем события только после синхронизации
+        if (TSTBIT(sync.flags1, SYNC_FLAGS1_SYNCED))
+        {        
             // Обновляем регистр сравнения для генерирования следующего события 
-            // через 6 градусов КВ
+            // через 6 градусов положения КВ
             angle = TIM9->CCR2;
             TIM9->CCR2 = (angle < 174) ? (angle + 6) : 0;
 
             // Вычисляем предполагаемое время между зубьями с учётом ускорения КВ
             cogs_time = TIM10->CNT;
-            cogs_period = (cogs_time > prev_cogs_time) 
-                ? (cogs_time - prev_cogs_time) 
-                : (65536 - (prev_cogs_time - cogs_time));
 
-            period = (cogs_period << 1) - prev_cogs_period;
+            sync.prev_cogs_period = sync.cogs_period;
+            sync.cogs_period = (cogs_time > sync.prev_cogs_time) 
+                ? (cogs_time - sync.prev_cogs_time) 
+                : (65536 - (sync.prev_cogs_time - cogs_time));
 
-            /*if (period < 0)
+            next_cogs_period = ((int32_t)sync.cogs_period << 1) - sync.prev_cogs_period;
+
+            if (next_cogs_period < 0)
             {
-                period = 0;
-            }*/
+                next_cogs_period = 0;
+            }
+            else if (next_cogs_period > 0xFFFF)
+            {
+                next_cogs_period = 0xFFFF;
+            }
 
-            prev_cogs_time  = cogs_time;
-            prev_cogs_period = cogs_period;
+            sync.prev_cogs_time  = cogs_time;
 
             // Сохраняем маску прерываний таймера событий
             mask = TIM1->DIER;
@@ -373,12 +366,12 @@ void TIM1_BRK_TIM9_IRQHandler(void)
             event = status.ign.spark_event;
 
             if (
-                (event->cogs == status.sync.cogs)
-                && (event->stroke == status.sync.stroke)
+                (event->cogs == sync.cogs)
+                && (event->stroke == sync.stroke)
             )
             {
                 TIM1->CCR1 = (event->ang_mod != 0) 
-                    ? (((uint32_t)event->ang_mod * period) / 6) : 0;
+                    ? (((uint32_t)event->ang_mod * next_cogs_period) / 6) : 0;
                 SETREG(TIM1->DIER, 1/*TIM_DIER_CC1IE*/);
             }
 
@@ -386,12 +379,12 @@ void TIM1_BRK_TIM9_IRQHandler(void)
             event = status.ign.dwell_event;
 
             if (
-                (event->cogs == status.sync.cogs)
-                && (event->stroke == status.sync.stroke)
+                (event->cogs == sync.cogs)
+                && (event->stroke == sync.stroke)
             )
             {
                 TIM1->CCR2 = (event->ang_mod != 0)
-                    ? (((uint32_t)event->ang_mod * period) / 6) : 0;
+                    ? (((uint32_t)event->ang_mod * next_cogs_period) / 6) : 0;
                 SETREG(TIM1->DIER, 2/*TIM_DIER_CC2IE*/);
             }
 
@@ -399,12 +392,12 @@ void TIM1_BRK_TIM9_IRQHandler(void)
             event = status.inj.event;
 
             if (
-                (event->cogs == status.sync.cogs)
-                && (event->stroke == status.sync.stroke)
+                (event->cogs == sync.cogs)
+                && (event->stroke == sync.stroke)
             )
             {
                 TIM1->CCR3 = (event->ang_mod != 0) 
-                    ? (((uint32_t)event->ang_mod * period) / 6) : 0;
+                    ? (((uint32_t)event->ang_mod * next_cogs_period) / 6) : 0;
                 SETREG(TIM1->DIER, 3/*TIM_DIER_CC3IE*/);
             }
 
@@ -412,28 +405,28 @@ void TIM1_BRK_TIM9_IRQHandler(void)
             /*event = status.knock.event;
 
             if (
-                (event->cogs == status.sync.cogs)
-                && (event->stroke == status.sync.stroke)
+                (event->cogs == sync.cogs)
+                && (event->stroke == sync.stroke)
             )
             {
                 TIM1->CCR4 = (event->ang_mod != 0) 
-                    ? (((uint32_t)event->ang_mod * period) / 6) : 0;
+                    ? (((uint32_t)event->ang_mod * next_cogs_period) / 6) : 0;
                 SETREG(TIM1->DIER, 4);
             }*/
 
             // Применяем сохранённую маску прерываний таймера событий для того, 
             // чтобы не пропустить события из-за ускорения КВ 
-            TIM1->EGR |= mask;
+            TIM1->EGR |= (mask | TIM_EGR_UG);
 
             // Увеличиваем номер зуба
-            if ((++status.sync.cogs) == 30)
+            if ((++sync.cogs) == 30)
             {
-                status.sync.cogs = 0;
+                sync.cogs = 0;
 
                 // Увеличиваем номер текущего цилиндра через каждые 30 зубьев (180 градусов)
-                if ((++status.sync.stroke) == 4)
+                if ((++sync.stroke) == 4)
                 {
-                    status.sync.stroke = 0;
+                    sync.stroke = 0;
                 }
             }
         }

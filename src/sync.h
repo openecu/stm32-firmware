@@ -4,55 +4,56 @@
 #include "cmsis/stm32f4xx.h"
 
 #define SYNC_FLAGS1_SYNCED  0
+#define SYNC_FLAGS1_TRIG    1
 
 #define SYNC_STROKE_COUNT   4
 
 typedef struct sync_event_s
 {
-    // Timing
+    // Абсолютное значение угла
     uint16_t timing;
-    // Timing stroke
+    // Номер такта
     uint8_t stroke;
-    // Timing cogs
+    // Номер зуба
     uint8_t cogs;
-    // Angle between cogs
+    // Относительный угол (между зубьями)
     uint8_t ang_mod;
-    // Stroke offset
+    // Смещение номера такта
     uint8_t offset;
-    // Next event in sequence
+    // Указатель на следующее событие в очереди
     struct sync_event_s *next;
 
 } sync_event_t;
 
 typedef struct sync_state_s
 {
-    // Stroke counter
+    // Счётчик тактов
     uint8_t stroke;
-    // Previous stroke time
+    // Предыдущее значение счётчика времени такта
     uint16_t prev_stroke_time;
-    // Stroke period overflow counter
+    // Число переполний счётчика времени такта
     uint8_t stroke_ovf;
-    // Stroke period
+    // Время такта
     uint32_t stroke_period;
-    // Previous period time
+    // Предыдущее значение периода такта
     uint32_t prev_stroke_period;
-    // Cogs counter
+    // Счётчик зубов
     uint8_t cogs;
-    // Previous cogs time
+    // Предыдущее значение счётчика времени между зубьями
     uint16_t prev_cogs_time;
-    // Time between cogs
+    // Время между зубьями
     uint16_t cogs_period;
-    // Previous cogs period
+    // Предыдущее время между зубьями
     uint16_t prev_cogs_period;
-    // Instant frequency
+    // Мнговенное значение частоты вращения КВ
     uint16_t inst_freq;
-    // Frequency buffer
+    // Буфер числа оборотов КВ
     uint16_t freq_buf[SYNC_STROKE_COUNT];
-    // Frequency buffer head index
+    // Текущий индекс буфера
     uint16_t freq_head;
-    // Filtered frequency
-    uint16_t filt_freq;
-    // Flags 1
+    // Фильтрованное значение частоты вращения КВ
+    uint16_t freq;
+    // Флаги 1
     uint32_t flags1;
 
 } sync_state_t;

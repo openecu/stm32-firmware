@@ -7,7 +7,6 @@
 #include "comm.h"
 
 status_t status;
-uint8_t sync_psc = 100;
 
 int main(void)
 {
@@ -45,7 +44,7 @@ int main(void)
     GPIOD->OSPEEDR  |= (GPIO_OSPEEDER_OSPEEDR0_0 | GPIO_OSPEEDER_OSPEEDR1_0);
 
     TIM6->PSC   = 2499;
-    TIM6->ARR   = 100;
+    TIM6->ARR   = 10;
     TIM6->DIER  |= TIM_DIER_UIE;
     TIM6->CR1   |= (TIM_CR1_URS | TIM_CR1_CEN);
 
@@ -53,10 +52,10 @@ int main(void)
     NVIC_EnableIRQ(TIM6_DAC_IRQn);
 
     /* Init I/O */
-    /*sync_init();
+    sync_init();
     inj_init();
     ign_init();
-    idle_init();*/
+    /*idle_init();*/
     comm_init();
 
     /* ADC */
@@ -77,14 +76,6 @@ int main(void)
         inj_afr_calc();
         ign_dwell_calc();
         ign_timing_calc();
-
-        uint16_t c;
-        c = uart_getc();
-
-        if (!(c & UART_NO_DATA))
-        {
-            sync_psc = c;
-        }
     }
 
     return 0;
