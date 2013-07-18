@@ -46,23 +46,26 @@ void idle_control(void)
     status.idle.pwm_duty = pwm_duty;
 }
 
-/*
-    Idle ignition timing adjust
-*/
+/**
+ * Регулировка оборотов ХХ подстройкой УОЗ
+ */
 void idle_ign_timing_adjust(void)
 {
     int16_t delta_rpm, ign_offset;
 
-    delta_rpm = status.idle.target_rpm - status.sync.inst_freq;
+    // Начальное смещение УОЗ
+    ign_offset = 0;
 
-    if (ABS(delta_rpm) < config.idle_ign_adj_rpm_thres)
+    // Изменяем УОЗ только при закрытом дросселе
+    if ((status.flags1 & FLAGS1_CLOSED_THROT))
     {
-        ign_offset = 0;
-    }
-    else
-    {
-        ign_offset = table1d_lookup(delta_rpm, CONF_IDLE_IGN_OFFSET_SIZE, 
-            config.idle_ign_offset_rpm, config.idle_ign_offset);
+        delta_rpm = status.idle.target_rpm - status.sync.inst_freq;
+
+        if (ABS(delta_rpm) > config.idle_ign_adj_rpm_thres)
+        {
+            ign_offset = table1d_lookup(delta_rpm, CONF_IDLE_IGN_OFFSET_SIZE, 
+                config.idle_ign_offset_rpm, config.idle_ign_offset);
+        }
     }
 
     status.idle.delta_rpm = delta_rpm;
